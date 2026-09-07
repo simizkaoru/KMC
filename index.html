@@ -18,7 +18,10 @@
         
         .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        
+        .title-area { display: flex; align-items: center; gap: 12px; }
         h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
+        #debugStatus { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
         
         .zoom-controls { display: flex; align-items: center; gap: 8px; background: var(--surface-color); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-light); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .btn-zoom { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-weight: 600; color: var(--text-main); font-size: 14px; transition: all 0.2s; }
@@ -60,7 +63,10 @@
 
     <div class="header-section">
         <div class="header-top">
-            <h1>📅 KBL 미디어센터 구축 일정 대시보드</h1>
+            <div class="title-area">
+                <h1>📅 KBL 미디어센터 구축 일정 대시보드</h1>
+                <span id="debugStatus"></span>
+            </div>
             <div class="zoom-controls">
                 <button class="btn-zoom" onclick="zoomTable(-0.1)">− 축소</button>
                 <span id="zoomLevel">60%</span>
@@ -88,12 +94,11 @@
         // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
         const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
 
-        // 초기 비율을 60%로 고정
         let currentZoom = 0.6; 
         
         function zoomTable(step) {
             currentZoom += step;
-            if(currentZoom < 0.3) currentZoom = 0.3; // 최소 30%까지 축소
+            if(currentZoom < 0.3) currentZoom = 0.3;
             if(currentZoom > 2.0) currentZoom = 2.0;
             document.getElementById('scheduleTable').style.zoom = currentZoom;
             document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
@@ -104,17 +109,25 @@
             .then(data => {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('scheduleTable').style.display = 'table';
-                
-                // 데이터 렌더링 즉시 초기 60% 줌 적용
                 document.getElementById('scheduleTable').style.zoom = currentZoom;
                 document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
-                
-                const thead = document.getElementById('tableHead');
-                const tbody = document.getElementById('tableBody');
                 
                 const values = data.values;
                 const merges = data.merges || [];
                 
+                const debugEl = document.getElementById('debugStatus');
+                if (merges.length === 0) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요";
+                    debugEl.style.backgroundColor = "#fee2e2";
+                    debugEl.style.color = "#ef4444";
+                } else {
+                    debugEl.innerText = `✅ 정상 연동 (병합 셀 ${merges.length}개 확인)`;
+                    debugEl.style.backgroundColor = "#d1fae5";
+                    debugEl.style.color = "#059669";
+                }
+
+                const thead = document.getElementById('tableHead');
+                const tbody = document.getElementById('tableBody');
                 const maxRow = values.length - 1;
 
                 let headHtml = `
@@ -137,12 +150,17 @@
                 const spanMap = {}; 
                 const skipMap = {}; 
 
+                // 🚨 버그 수정 완료: m.numColumns -> m.numCols 로 변수명 오타 수정
                 merges.forEach(m => {
                     let r = m.row - 1; 
                     let c = m.col - 1;
-                    spanMap[`${r}-${c}`] = { rowspan: m.numRows, colspan: m.numColumns };
-                    for(let ir = 0; ir < m.numRows; ir++) {
-                        for(let ic = 0; ic < m.numColumns; ic++) {
+                    let rs = m.numRows || 1;
+                    let cs = m.numCols || 1; 
+                    
+                    spanMap[`${r}-${c}`] = { rowspan: rs, colspan: cs };
+                    
+                    for(let ir = 0; ir < rs; ir++) {
+                        for(let ic = 0; ic < cs; ic++) {
                             if(ir === 0 && ic === 0) continue; 
                             skipMap[`${r+ir}-${c+ic}`] = true; 
                         }
