@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBL 미디어센터 구축 일정 대시보드</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --border-light: #e2e8f0;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+        }
+
+        body { font-family: 'Pretendard', -apple-system, sans-serif; padding: 30px 20px; background-color: #f8fafc; color: var(--text-main); margin: 0; }
+        
+        .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
+        
+        .zoom-controls { display: flex; align-items: center; gap: 8px; background: var(--surface-color); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-light); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn-zoom { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-weight: 600; color: var(--text-main); font-size: 14px; transition: all 0.2s; }
+        .btn-zoom:hover { background: #e2e8f0; }
+        #zoomLevel { font-size: 14px; font-weight: 700; color: var(--text-main); min-width: 45px; text-align: center; }
+
+        .legend-container { display: flex; gap: 12px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-sub); background: var(--surface-color); padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .color-box { width: 12px; height: 12px; border-radius: 50%; }
+        
+        .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
+        
+        /* 🚨 가로 스크롤 활성화를 위해 최소 너비를 1800px로 확장 */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
+        
+        th, td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
+        td:last-child, th:last-child { border-right: none; }
+        tr:last-child td { border-bottom: none; }
+        
+        thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
+        .year-header { font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--text-main); padding-bottom: 10px; border-right: 1px solid var(--border-light); }
+        .month-header { font-size: 12px; font-weight: 600; color: var(--text-sub); border-bottom: 1px solid var(--border-light); min-width: 50px; }
+        
+        .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light); text-align: left; padding-left: 16px; }
+        
+        .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+        .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
+        .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .bg-cms { background: linear-gradient(135deg, #f472b6, #ec4899); }
+        .bg-network { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
+        .bg-default { background: linear-gradient(135deg, #94a3b8, #64748b); }
+        
+        /* 🚨 글자가 찌그러지지 않고 단어 단위로 예쁘게 줄바꿈되도록 속성 유지 */
+        .task-bar { color: white; font-weight: 600; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 12.5px; letter-spacing: -0.3px; border: none !important; word-break: keep-all; line-height: 1.4; padding: 12px 8px !important; }
+        .task-legend { color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; border-radius: 8px 0 0 8px; border: none !important; word-break: keep-all; }
+
+        #loading { text-align: center; font-size: 14px; color: var(--text-sub); padding: 80px; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="header-top">
+            <h1>📅 KBL 미디어센터 구축 일정 대시보드</h1>
+            <div class="zoom-controls">
+                <button class="btn-zoom" onclick="zoomTable(-0.1)">− 축소</button>
+                <span id="zoomLevel">100%</span>
+                <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
+            </div>
+        </div>
+        <div class="legend-container">
+            <div class="legend-item"><div class="color-box bg-consulting"></div>컨설팅</div>
+            <div class="legend-item"><div class="color-box bg-env"></div>환경공사</div>
+            <div class="legend-item"><div class="color-box bg-baseband"></div>베이스밴드</div>
+            <div class="legend-item"><div class="color-box bg-cms"></div>운영 및 CMS</div>
+            <div class="legend-item"><div class="color-box bg-network"></div>통합 회선망</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
+        <table id="scheduleTable" style="display:none;">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
+
+        let currentZoom = 1.0;
+        function zoomTable(step) {
+            currentZoom += step;
+            if(currentZoom < 0.5) currentZoom = 0.5;
+            if(currentZoom > 2.0) currentZoom = 2.0;
+            document.getElementById('scheduleTable').style.zoom = currentZoom;
+            document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
+        }
+
+        fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('scheduleTable').style.display = 'table';
+                
+                const thead = document.getElementById('tableHead');
+                const tbody = document.getElementById('tableBody');
+                
+                const values = data.values;
+                const merges = data.merges || [];
+                
+                // 데이터의 실제 가장 아랫줄 번호
+                const maxRow = values.length - 1;
+
+                let headHtml = `
+                    <tr>
+                        <th rowspan="2" style="min-width: 100px; border-right: 1px solid #e2e8f0;">구분</th>
+                        <th rowspan="2" style="min-width: 160px; border-right: 2px solid #e2e8f0;">상세 내역</th>
+                        <th colspan="6" class="year-header">2026년</th>
+                        <th colspan="12" class="year-header">2027년</th>
+                        <th colspan="6" class="year-header" style="border-right: none;">2028년</th>
+                    </tr>
+                    <tr>
+                `;
+                const months = [7,8,9,10,11,12, 1,2,3,4,5,6,7,8,9,10,11,12, 1,2,3,4,5,6];
+                months.forEach((m, idx) => {
+                    headHtml += `<th class="month-header" ${idx === 23 ? 'style="border-right:none;"' : ''}>${m}월</th>`;
+                });
+                headHtml += `</tr>`;
+                thead.innerHTML = headHtml;
+
+                const spanMap = {}; 
+                const skipMap = {}; 
+
+                merges.forEach(m => {
+                    let r = m.row - 1; 
+                    let c = m.col - 1;
+                    spanMap[`${r}-${c}`] = { rowspan: m.numRows, colspan: m.numColumns };
+                    for(let ir = 0; ir < m.numRows; ir++) {
+                        for(let ic = 0; ic < m.numColumns; ic++) {
+                            if(ir === 0 && ic === 0) continue; 
+                            skipMap[`${r+ir}-${c+ic}`] = true; 
+                        }
+                    }
+                });
+
+                let rowSpansA = {}; 
+                let currentSpanIndex = -1;
+                for(let i = 4; i <= maxRow; i++) {
+                    let cat = String(values[i][0] || "").trim();
+                    if(cat !== "") {
+                        currentSpanIndex = i;
+                        rowSpansA[i] = 1;
+                    } else if (currentSpanIndex !== -1) {
+                        rowSpansA[currentSpanIndex]++;
+                        rowSpansA[i] = 0; 
+                    }
+                }
+
+                let currentCategory = "";
+
+                for(let i = 4; i <= maxRow; i++) {
+                    let rowHtml = "<tr>";
+                    let cellA = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
+                    if (cellA !== "") currentCategory = cellA;
+
+                    let colorClass = "bg-default";
+                    if (currentCategory.includes("컨설팅")) colorClass = "bg-consulting";
+                    else if (currentCategory.includes("환경공사")) colorClass = "bg-env";
+                    else if (currentCategory.includes("베이스밴드")) colorClass = "bg-baseband";
+                    else if (currentCategory.includes("CMS")) colorClass = "bg-cms";
+                    else if (currentCategory.includes("회선망")) colorClass = "bg-network";
+
+                    if (rowSpansA[i] > 0) {
+                        rowHtml += `<td class="${colorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
+                    }
+                    
+                    if (!skipMap[`${i}-1`]) {
+                        let rs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].rowspan : 1;
+                        let cs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].colspan : 1;
+                        // 표 맨 아래를 뚫고 나가는 비정상 병합만 컷트
+                        if (i + rs - 1 > maxRow) rs = maxRow - i + 1; 
+                        
+                        let detail = values[i] && values[i][1] ? String(values[i][1]).trim() : "";
+                        rowHtml += `<td class="col-detail" rowspan="${rs}" colspan="${cs}">${detail}</td>`;
+                    }
+                    
+                    for(let col = 3; col <= 26; col++) {
+                        if (!skipMap[`${i}-${col}`]) {
+                            let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
+                            let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
+                            
+                            if (col + cs - 1 > 26) cs = 26 - col + 1;
+                            if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
+                            
+                            let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
+                            
+                            if (cellValue !== "") {
+                                rowHtml += `<td class="${colorClass} task-bar" rowspan="${rs}" colspan="${cs}">${cellValue}</td>`;
+                            } else {
+                                rowHtml += `<td rowspan="${rs}" colspan="${cs}"></td>`;
+                            }
+                        }
+                    }
+                    rowHtml += "</tr>";
+                    tbody.innerHTML += rowHtml;
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
+                console.error(error);
+            });
+    </script>
+</body>
+</html>
