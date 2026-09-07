@@ -46,22 +46,20 @@
         
         .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light); text-align: left; padding-left: 16px; }
         
-        /* 기존 5개 카테고리 컬러 */
         .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
         .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
         .bg-cms { background: linear-gradient(135deg, #f472b6, #ec4899); }
         .bg-network { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
         .bg-default { background: linear-gradient(135deg, #94a3b8, #64748b); }
-
-        /* 🚨 추가 생성될 카테고리를 위한 다이나믹 추가 컬러 7종 */
-        .bg-extra-1 { background: linear-gradient(135deg, #f87171, #ef4444); } /* 레드 */
-        .bg-extra-2 { background: linear-gradient(135deg, #a3e635, #84cc16); } /* 라임 */
-        .bg-extra-3 { background: linear-gradient(135deg, #2dd4bf, #14b8a6); } /* 민트 */
-        .bg-extra-4 { background: linear-gradient(135deg, #818cf8, #6366f1); } /* 인디고 */
-        .bg-extra-5 { background: linear-gradient(135deg, #fb923c, #f97316); } /* 오렌지 */
-        .bg-extra-6 { background: linear-gradient(135deg, #f43f5e, #e11d48); } /* 로즈 */
-        .bg-extra-7 { background: linear-gradient(135deg, #22d3ee, #06b6d4); } /* 시안 */
+        
+        .bg-extra-1 { background: linear-gradient(135deg, #f87171, #ef4444); } 
+        .bg-extra-2 { background: linear-gradient(135deg, #a3e635, #84cc16); } 
+        .bg-extra-3 { background: linear-gradient(135deg, #2dd4bf, #14b8a6); } 
+        .bg-extra-4 { background: linear-gradient(135deg, #818cf8, #6366f1); } 
+        .bg-extra-5 { background: linear-gradient(135deg, #fb923c, #f97316); } 
+        .bg-extra-6 { background: linear-gradient(135deg, #f43f5e, #e11d48); } 
+        .bg-extra-7 { background: linear-gradient(135deg, #22d3ee, #06b6d4); } 
         
         .task-bar { color: white; font-weight: 600; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 12.5px; letter-spacing: -0.3px; border: none !important; word-break: keep-all; line-height: 1.4; padding: 12px 8px !important; }
         .task-legend { color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; border-radius: 8px 0 0 8px; border: none !important; word-break: keep-all; }
@@ -83,7 +81,6 @@
                 <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
             </div>
         </div>
-        <!-- 🚨 범례가 자바스크립트를 통해 자동으로 그려질 영역 -->
         <div class="legend-container" id="dynamicLegend"></div>
     </div>
 
@@ -119,66 +116,65 @@
                 
                 const values = data.values;
                 const merges = data.merges || [];
+                const backgrounds = data.backgrounds || []; 
                 const maxRow = values.length - 1;
                 
-                // 디버깅 메시지
                 const debugEl = document.getElementById('debugStatus');
-                if (merges.length === 0) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요";
+                if (!backgrounds || backgrounds.length === 0) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (배경색 추출 누락)";
+                    debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
+                } else if (merges.length === 0) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (병합 누락)";
                     debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
                 } else {
-                    debugEl.innerText = `✅ 정상 연동 (병합 셀 ${merges.length}개 확인)`;
+                    debugEl.innerText = `✅ 정상 연동 완료`;
                     debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 }
 
-                // 🚨 1. 고정 카테고리 컬러 매핑 및 동적 컬러 리스트 세팅
-                const colorMap = {
-                    "컨설팅": "bg-consulting",
-                    "환경공사": "bg-env",
-                    "베이스밴드": "bg-baseband",
-                    "CMS": "bg-cms",
-                    "회선망": "bg-network"
+                // --- 1. A열 카테고리와 배경색 매핑 수집 ---
+                const categoryColorMap = {}; 
+                const hexToColorClass = {}; 
+                const predefinedClasses = {
+                    "컨설팅": "bg-consulting", "환경공사": "bg-env", "베이스밴드": "bg-baseband",
+                    "CMS": "bg-cms", "회선망": "bg-network"
                 };
-                
                 const extraColors = ["bg-extra-1", "bg-extra-2", "bg-extra-3", "bg-extra-4", "bg-extra-5", "bg-extra-6", "bg-extra-7"];
                 let extraColorIdx = 0;
                 
-                // 🚨 2. A열을 스캔하며 존재하는 모든 유일한 카테고리를 수집
-                const activeCategories = [];
-                const finalColorMap = {}; // 실제 화면에 부여될 카테고리-컬러 짝꿍
-
+                let currentCatForMap = "";
                 for(let i = 4; i <= maxRow; i++) {
                     let cat = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
-                    if (cat !== "" && !activeCategories.includes(cat)) {
-                        activeCategories.push(cat);
-                        
-                        // 기존 지정색이 있으면 유지, 없으면 새로운 추가색 부여
-                        let matched = false;
-                        for(let keyword in colorMap) {
-                            if (cat.includes(keyword)) {
-                                finalColorMap[cat] = colorMap[keyword];
-                                matched = true; break;
+                    if (cat !== "") currentCatForMap = cat;
+                    
+                    if (currentCatForMap !== "") {
+                        if (!categoryColorMap[currentCatForMap]) {
+                            let assigned = "";
+                            for(let key in predefinedClasses) {
+                                if (currentCatForMap.includes(key)) { assigned = predefinedClasses[key]; break; }
                             }
+                            if (!assigned) { assigned = extraColors[extraColorIdx % extraColors.length]; extraColorIdx++; }
+                            categoryColorMap[currentCatForMap] = assigned;
                         }
-                        if (!matched) {
-                            finalColorMap[cat] = extraColors[extraColorIdx % extraColors.length];
-                            extraColorIdx++;
+                        
+                        // 구글 시트가 읽어온 진짜 배경색 Hex 코드와 카테고리를 연결!
+                        let hex = backgrounds[i] && backgrounds[i][0] ? backgrounds[i][0].toLowerCase() : "";
+                        if (hex && hex !== "#ffffff" && hex !== "#000000") {
+                            hexToColorClass[hex] = categoryColorMap[currentCatForMap];
                         }
                     }
                 }
 
-                // 🚨 3. 상단에 동적 범례 HTML 렌더링
+                // --- 2. 상단 범례 그리기 ---
                 const legendContainer = document.getElementById('dynamicLegend');
                 let legendHtml = "";
-                activeCategories.forEach(cat => {
-                    // 엔터키(줄바꿈)가 들어간 카테고리명을 범례에서는 띄어쓰기로 예쁘게 교체
-                    let displayName = cat.replace(/\n/g, " "); 
-                    let colorClass = finalColorMap[cat];
+                for(let catName in categoryColorMap) {
+                    let displayName = catName.replace(/\n/g, " "); 
+                    let colorClass = categoryColorMap[catName];
                     legendHtml += `<div class="legend-item"><div class="color-box ${colorClass}"></div>${displayName}</div>`;
-                });
+                }
                 legendContainer.innerHTML = legendHtml;
 
-                // --- 테이블 헤더 세팅 ---
+                // --- 3. 헤더 그리기 ---
                 const thead = document.getElementById('tableHead');
                 const tbody = document.getElementById('tableBody');
                 
@@ -199,7 +195,6 @@
                 headHtml += `</tr>`;
                 thead.innerHTML = headHtml;
 
-                // --- 셀 병합 정보 세팅 ---
                 const spanMap = {}; 
                 const skipMap = {}; 
                 merges.forEach(m => {
@@ -227,19 +222,18 @@
                     }
                 }
 
-                // --- 데이터 렌더링 ---
                 let currentCategory = "";
 
+                // --- 4. 데이터 렌더링 ---
                 for(let i = 4; i <= maxRow; i++) {
                     let rowHtml = "<tr>";
                     let cellA = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
                     if (cellA !== "") currentCategory = cellA;
 
-                    // 동적 매핑된 색상 가져오기
-                    let colorClass = finalColorMap[currentCategory] || "bg-default";
+                    let rowColorClass = categoryColorMap[currentCategory] || "bg-default";
 
                     if (rowSpansA[i] > 0) {
-                        rowHtml += `<td class="${colorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
+                        rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
                     }
                     
                     if (!skipMap[`${i}-1`]) {
@@ -260,9 +254,16 @@
                             if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                             
                             let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
+                            let cellHex = backgrounds[i] && backgrounds[i][col] ? backgrounds[i][col].toLowerCase() : "";
+                            
+                            // 🎨 막대 색상 결정 (해당 칸에 칠해진 배경색 코드가 A열의 범례 색상과 일치하면 교체!)
+                            let barColor = rowColorClass;
+                            if (cellHex && cellHex !== "#ffffff" && cellHex !== "#000000" && hexToColorClass[cellHex]) {
+                                barColor = hexToColorClass[cellHex];
+                            }
                             
                             if (cellValue !== "") {
-                                rowHtml += `<td class="${colorClass} task-bar" rowspan="${rs}" colspan="${cs}">${cellValue}</td>`;
+                                rowHtml += `<td class="${barColor} task-bar" rowspan="${rs}" colspan="${cs}">${cellValue}</td>`;
                             } else {
                                 rowHtml += `<td rowspan="${rs}" colspan="${cs}"></td>`;
                             }
