@@ -10,11 +10,13 @@
             --bg-color: #f8fafc;
             --surface-color: #ffffff;
             --border-light: #e2e8f0;
+            --border-strong: #cbd5e1;
             --text-main: #1e293b;
             --text-sub: #64748b;
+            --primary: #3b82f6;
         }
 
-        body { font-family: 'Pretendard', -apple-system, sans-serif; padding: 30px 20px; background-color: #f8fafc; color: var(--text-main); margin: 0; }
+        body { font-family: 'Pretendard', -apple-system, sans-serif; padding: 30px 20px; background-color: var(--bg-color); color: var(--text-main); margin: 0; }
         
         .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
@@ -22,6 +24,11 @@
         .title-area { display: flex; align-items: center; gap: 12px; }
         h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #debugStatus { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
+        
+        /* 탭 토글 스위치 디자인 */
+        .toggle-wrapper { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin-left: 10px; }
+        .toggle-btn { border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
+        .toggle-btn.active { background: var(--surface-color); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
         .zoom-controls { display: flex; align-items: center; gap: 8px; background: var(--surface-color); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-light); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .btn-zoom { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-weight: 600; color: var(--text-main); font-size: 14px; transition: all 0.2s; }
@@ -32,20 +39,48 @@
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-sub); background: var(--surface-color); padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .color-box { width: 12px; height: 12px; border-radius: 50%; }
         
-        .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
+        .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
-        
-        th, td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
-        td:last-child, th:last-child { border-right: none; }
-        tr:last-child td { border-bottom: none; }
-        
-        thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
-        .year-header { font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--text-main); padding-bottom: 10px; border-right: 1px solid var(--border-light); }
+        /* 1. 대시보드 테이블 전용 스타일 */
+        table#scheduleTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
+        table#scheduleTable th, table#scheduleTable td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
+        table#scheduleTable thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
+        table#scheduleTable td:last-child, table#scheduleTable th:last-child { border-right: none; }
+        table#scheduleTable tr:last-child td { border-bottom: none; }
+        .year-header { font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--text-main) !important; padding-bottom: 10px; border-right: 1px solid var(--border-light) !important; }
         .month-header { font-size: 12px; font-weight: 600; color: var(--text-sub); border-bottom: 1px solid var(--border-light); min-width: 50px; }
+        .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light) !important; text-align: left !important; padding-left: 16px !important; }
         
-        .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light); text-align: left; padding-left: 16px; }
+        /* 🚨 2. 회의록 테이블 전용 고급 스타일 */
+        table#meetingTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1300px; transform-origin: top left; }
+        table#meetingTable th { 
+            background-color: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; 
+            text-align: center; padding: 16px; border-bottom: 2px solid var(--border-strong); 
+            border-right: 1px solid var(--border-light); position: sticky; top: 0; z-index: 2; 
+        }
+        table#meetingTable td { 
+            padding: 16px 20px; font-size: 14px; line-height: 1.6; color: #475569;
+            border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); 
+            vertical-align: middle; text-align: left; background-color: var(--surface-color);
+            transition: background-color 0.2s;
+        }
         
+        /* 회의록 날짜 컬럼(연,월,주차) 음영 처리 */
+        table#meetingTable td.col-date { 
+            background-color: #f8fafc; font-weight: 700; color: var(--text-main); text-align: center; 
+        }
+        /* 회의 주제 강조 */
+        table#meetingTable td.col-topic { 
+            font-weight: 700; color: #0f172a; font-size: 14.5px;
+        }
+        /* 마우스 오버 시 옅은 하이라이트 (날짜 제외 내용 셀만) */
+        table#meetingTable td:not(.col-date):hover { 
+            background-color: #f0f9ff; 
+        }
+        table#meetingTable td:last-child, table#meetingTable th:last-child { border-right: none; }
+        table#meetingTable tr:last-child td { border-bottom: none; }
+        
+        /* 대시보드 컬러맵 */
         .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
         .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
@@ -64,7 +99,7 @@
         .task-bar { color: white; font-weight: 600; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 12.5px; letter-spacing: -0.3px; border: none !important; word-break: keep-all; line-height: 1.4; padding: 12px 8px !important; }
         .task-legend { color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; border-radius: 8px 0 0 8px; border: none !important; word-break: keep-all; }
 
-        #loading { text-align: center; font-size: 14px; color: var(--text-sub); padding: 80px; font-weight: 500; }
+        #loading { text-align: center; font-size: 15px; color: var(--text-main); padding: 80px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -72,8 +107,12 @@
     <div class="header-section">
         <div class="header-top">
             <div class="title-area">
-                <h1>📅 KBL 미디어센터 구축 일정 대시보드</h1>
+                <h1>📅 KBL 미디어센터 구축 현황</h1>
                 <span id="debugStatus"></span>
+                <div class="toggle-wrapper">
+                    <button class="toggle-btn active" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
+                    <button class="toggle-btn" id="btnSchedule" onclick="switchTab('schedule')">주간 회의록</button>
+                </div>
             </div>
             <div class="zoom-controls">
                 <button class="btn-zoom" onclick="zoomTable(-0.1)">− 축소</button>
@@ -84,12 +123,22 @@
         <div class="legend-container" id="dynamicLegend"></div>
     </div>
 
-    <div class="table-container">
+    <!-- 로딩 화면 -->
+    <div class="table-container" id="loadingContainer">
         <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
-        <table id="scheduleTable" style="display:none;">
+    </div>
+
+    <!-- 뷰 1: 대시보드 -->
+    <div class="table-container" id="dashboardView" style="display:none;">
+        <table id="scheduleTable">
             <thead id="tableHead"></thead>
             <tbody id="tableBody"></tbody>
         </table>
+    </div>
+
+    <!-- 뷰 2: 회의록 -->
+    <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
+        <!-- 여기에 table이 들어갑니다 (테이블 자체에 box-shadow 등을 주기 위해 컨테이너 스타일 리셋) -->
     </div>
 
     <script>
@@ -102,181 +151,266 @@
             currentZoom += step;
             if(currentZoom < 0.3) currentZoom = 0.3;
             if(currentZoom > 2.0) currentZoom = 2.0;
-            document.getElementById('scheduleTable').style.zoom = currentZoom;
+            
+            const tb1 = document.getElementById('scheduleTable');
+            const tb2 = document.getElementById('meetingTable');
+            if(tb1) tb1.style.zoom = currentZoom;
+            if(tb2) tb2.style.zoom = currentZoom;
+            
             document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
+        }
+
+        function switchTab(tabId) {
+            document.getElementById('btnDashboard').classList.remove('active');
+            document.getElementById('btnSchedule').classList.remove('active');
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('scheduleView').style.display = 'none';
+            
+            if(tabId === 'dashboard') {
+                document.getElementById('btnDashboard').classList.add('active');
+                document.getElementById('dashboardView').style.display = 'block';
+                document.getElementById('dynamicLegend').style.display = 'flex';
+            } else {
+                document.getElementById('btnSchedule').classList.add('active');
+                document.getElementById('scheduleView').style.display = 'block';
+                document.getElementById('dynamicLegend').style.display = 'none'; 
+            }
         }
 
         fetch(API_URL)
             .then(response => response.json())
             .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('scheduleTable').style.display = 'table';
-                document.getElementById('scheduleTable').style.zoom = currentZoom;
-                document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
-                
-                const values = data.values;
-                const merges = data.merges || [];
-                const backgrounds = data.backgrounds || []; 
-                const maxRow = values.length - 1;
-                
                 const debugEl = document.getElementById('debugStatus');
-                if (!backgrounds || backgrounds.length === 0) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (배경색 추출 누락)";
+                if (!data.sheet1 || !data.sheet2) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요";
                     debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                } else if (merges.length === 0) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (병합 누락)";
-                    debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                } else {
-                    debugEl.innerText = `✅ 정상 연동 완료`;
-                    debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
+                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 재배포해주세요.</b>";
+                    return;
                 }
-
-                // --- 1. A열 카테고리와 배경색 매핑 수집 ---
-                const categoryColorMap = {}; 
-                const hexToColorClass = {}; 
-                const predefinedClasses = {
-                    "컨설팅": "bg-consulting", "환경공사": "bg-env", "베이스밴드": "bg-baseband",
-                    "CMS": "bg-cms", "회선망": "bg-network"
-                };
-                const extraColors = ["bg-extra-1", "bg-extra-2", "bg-extra-3", "bg-extra-4", "bg-extra-5", "bg-extra-6", "bg-extra-7"];
-                let extraColorIdx = 0;
                 
-                let currentCatForMap = "";
-                for(let i = 4; i <= maxRow; i++) {
-                    let cat = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
-                    if (cat !== "") currentCatForMap = cat;
-                    
-                    if (currentCatForMap !== "") {
-                        if (!categoryColorMap[currentCatForMap]) {
-                            let assigned = "";
-                            for(let key in predefinedClasses) {
-                                if (currentCatForMap.includes(key)) { assigned = predefinedClasses[key]; break; }
-                            }
-                            if (!assigned) { assigned = extraColors[extraColorIdx % extraColors.length]; extraColorIdx++; }
-                            categoryColorMap[currentCatForMap] = assigned;
-                        }
-                        
-                        // 구글 시트가 읽어온 진짜 배경색 Hex 코드와 카테고리를 연결!
-                        let hex = backgrounds[i] && backgrounds[i][0] ? backgrounds[i][0].toLowerCase() : "";
-                        if (hex && hex !== "#ffffff" && hex !== "#000000") {
-                            hexToColorClass[hex] = categoryColorMap[currentCatForMap];
-                        }
-                    }
-                }
-
-                // --- 2. 상단 범례 그리기 ---
-                const legendContainer = document.getElementById('dynamicLegend');
-                let legendHtml = "";
-                for(let catName in categoryColorMap) {
-                    let displayName = catName.replace(/\n/g, " "); 
-                    let colorClass = categoryColorMap[catName];
-                    legendHtml += `<div class="legend-item"><div class="color-box ${colorClass}"></div>${displayName}</div>`;
-                }
-                legendContainer.innerHTML = legendHtml;
-
-                // --- 3. 헤더 그리기 ---
-                const thead = document.getElementById('tableHead');
-                const tbody = document.getElementById('tableBody');
+                debugEl.innerText = `✅ 정상 연동 완료`;
+                debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
+                document.getElementById('loadingContainer').style.display = 'none';
                 
-                let headHtml = `
-                    <tr>
-                        <th rowspan="2" style="min-width: 100px; border-right: 1px solid #e2e8f0;">구분</th>
-                        <th rowspan="2" style="min-width: 160px; border-right: 2px solid #e2e8f0;">상세 내역</th>
-                        <th colspan="6" class="year-header">2026년</th>
-                        <th colspan="12" class="year-header">2027년</th>
-                        <th colspan="6" class="year-header" style="border-right: none;">2028년</th>
-                    </tr>
-                    <tr>
-                `;
-                const months = [7,8,9,10,11,12, 1,2,3,4,5,6,7,8,9,10,11,12, 1,2,3,4,5,6];
-                months.forEach((m, idx) => {
-                    headHtml += `<th class="month-header" ${idx === 23 ? 'style="border-right:none;"' : ''}>${m}월</th>`;
-                });
-                headHtml += `</tr>`;
-                thead.innerHTML = headHtml;
-
-                const spanMap = {}; 
-                const skipMap = {}; 
-                merges.forEach(m => {
-                    let r = m.row - 1; let c = m.col - 1;
-                    let rs = m.numRows || 1; let cs = m.numCols || 1; 
-                    spanMap[`${r}-${c}`] = { rowspan: rs, colspan: cs };
-                    for(let ir = 0; ir < rs; ir++) {
-                        for(let ic = 0; ic < cs; ic++) {
-                            if(ir === 0 && ic === 0) continue; 
-                            skipMap[`${r+ir}-${c+ic}`] = true; 
-                        }
-                    }
-                });
-
-                let rowSpansA = {}; 
-                let currentSpanIndex = -1;
-                for(let i = 4; i <= maxRow; i++) {
-                    let cat = String(values[i][0] || "").trim();
-                    if(cat !== "") {
-                        currentSpanIndex = i;
-                        rowSpansA[i] = 1;
-                    } else if (currentSpanIndex !== -1) {
-                        rowSpansA[currentSpanIndex]++;
-                        rowSpansA[i] = 0; 
-                    }
-                }
-
-                let currentCategory = "";
-
-                // --- 4. 데이터 렌더링 ---
-                for(let i = 4; i <= maxRow; i++) {
-                    let rowHtml = "<tr>";
-                    let cellA = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
-                    if (cellA !== "") currentCategory = cellA;
-
-                    let rowColorClass = categoryColorMap[currentCategory] || "bg-default";
-
-                    if (rowSpansA[i] > 0) {
-                        rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
-                    }
-                    
-                    if (!skipMap[`${i}-1`]) {
-                        let rs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].rowspan : 1;
-                        let cs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].colspan : 1;
-                        if (i + rs - 1 > maxRow) rs = maxRow - i + 1; 
-                        
-                        let detail = values[i] && values[i][1] ? String(values[i][1]).trim() : "";
-                        rowHtml += `<td class="col-detail" rowspan="${rs}" colspan="${cs}">${detail}</td>`;
-                    }
-                    
-                    for(let col = 3; col <= 26; col++) {
-                        if (!skipMap[`${i}-${col}`]) {
-                            let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
-                            let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
-                            
-                            if (col + cs - 1 > 26) cs = 26 - col + 1;
-                            if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
-                            
-                            let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
-                            let cellHex = backgrounds[i] && backgrounds[i][col] ? backgrounds[i][col].toLowerCase() : "";
-                            
-                            // 🎨 막대 색상 결정 (해당 칸에 칠해진 배경색 코드가 A열의 범례 색상과 일치하면 교체!)
-                            let barColor = rowColorClass;
-                            if (cellHex && cellHex !== "#ffffff" && cellHex !== "#000000" && hexToColorClass[cellHex]) {
-                                barColor = hexToColorClass[cellHex];
-                            }
-                            
-                            if (cellValue !== "") {
-                                rowHtml += `<td class="${barColor} task-bar" rowspan="${rs}" colspan="${cs}">${cellValue}</td>`;
-                            } else {
-                                rowHtml += `<td rowspan="${rs}" colspan="${cs}"></td>`;
-                            }
-                        }
-                    }
-                    rowHtml += "</tr>";
-                    tbody.innerHTML += rowHtml;
-                }
+                renderDashboard(data.sheet1);
+                renderMeetingSchedule(data.sheet2);
+                
+                zoomTable(0); 
+                switchTab('dashboard');
             })
             .catch(error => {
                 document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
                 console.error(error);
             });
+
+        // 1. 대시보드 렌더링
+        function renderDashboard(sheetData) {
+            const values = sheetData.values;
+            const merges = sheetData.merges || [];
+            const backgrounds = sheetData.backgrounds || []; 
+            const maxRow = values.length - 1;
+            
+            const categoryColorMap = {}; 
+            const hexToColorClass = {}; 
+            const predefinedClasses = {
+                "컨설팅": "bg-consulting", "환경공사": "bg-env", "베이스밴드": "bg-baseband",
+                "CMS": "bg-cms", "회선망": "bg-network"
+            };
+            const extraColors = ["bg-extra-1", "bg-extra-2", "bg-extra-3", "bg-extra-4", "bg-extra-5", "bg-extra-6", "bg-extra-7"];
+            let extraColorIdx = 0;
+            
+            let currentCatForMap = "";
+            for(let i = 4; i <= maxRow; i++) {
+                let cat = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
+                if (cat !== "") currentCatForMap = cat;
+                if (currentCatForMap !== "") {
+                    if (!categoryColorMap[currentCatForMap]) {
+                        let assigned = "";
+                        for(let key in predefinedClasses) {
+                            if (currentCatForMap.includes(key)) { assigned = predefinedClasses[key]; break; }
+                        }
+                        if (!assigned) { assigned = extraColors[extraColorIdx % extraColors.length]; extraColorIdx++; }
+                        categoryColorMap[currentCatForMap] = assigned;
+                    }
+                    let hex = backgrounds[i] && backgrounds[i][0] ? backgrounds[i][0].toLowerCase() : "";
+                    if (hex && hex !== "#ffffff" && hex !== "#000000") {
+                        hexToColorClass[hex] = categoryColorMap[currentCatForMap];
+                    }
+                }
+            }
+
+            const legendContainer = document.getElementById('dynamicLegend');
+            let legendHtml = "";
+            for(let catName in categoryColorMap) {
+                let displayName = catName.replace(/\n/g, " "); 
+                let colorClass = categoryColorMap[catName];
+                legendHtml += `<div class="legend-item"><div class="color-box ${colorClass}"></div>${displayName}</div>`;
+            }
+            legendContainer.innerHTML = legendHtml;
+
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+            
+            let headHtml = `
+                <tr>
+                    <th rowspan="2" style="min-width: 100px;">구분</th>
+                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
+                    <th colspan="6" class="year-header">2026년</th>
+                    <th colspan="12" class="year-header">2027년</th>
+                    <th colspan="6" class="year-header" style="border-right: none;">2028년</th>
+                </tr>
+                <tr>
+            `;
+            const months = [7,8,9,10,11,12, 1,2,3,4,5,6,7,8,9,10,11,12, 1,2,3,4,5,6];
+            months.forEach((m, idx) => {
+                headHtml += `<th class="month-header" ${idx === 23 ? 'style="border-right:none;"' : ''}>${m}월</th>`;
+            });
+            headHtml += `</tr>`;
+            thead.innerHTML = headHtml;
+
+            const spanMap = {}; 
+            const skipMap = {}; 
+            merges.forEach(m => {
+                let r = m.row - 1; let c = m.col - 1;
+                let rs = m.numRows || 1; let cs = m.numCols || 1; 
+                spanMap[`${r}-${c}`] = { rowspan: rs, colspan: cs };
+                for(let ir = 0; ir < rs; ir++) {
+                    for(let ic = 0; ic < cs; ic++) {
+                        if(ir === 0 && ic === 0) continue; 
+                        skipMap[`${r+ir}-${c+ic}`] = true; 
+                    }
+                }
+            });
+
+            let rowSpansA = {}; 
+            let currentSpanIndex = -1;
+            for(let i = 4; i <= maxRow; i++) {
+                let cat = String(values[i][0] || "").trim();
+                if(cat !== "") {
+                    currentSpanIndex = i;
+                    rowSpansA[i] = 1;
+                } else if (currentSpanIndex !== -1) {
+                    rowSpansA[currentSpanIndex]++;
+                    rowSpansA[i] = 0; 
+                }
+            }
+
+            let currentCategory = "";
+            for(let i = 4; i <= maxRow; i++) {
+                let rowHtml = "<tr>";
+                let cellA = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
+                if (cellA !== "") currentCategory = cellA;
+
+                let rowColorClass = categoryColorMap[currentCategory] || "bg-default";
+
+                if (rowSpansA[i] > 0) {
+                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
+                }
+                
+                if (!skipMap[`${i}-1`]) {
+                    let rs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].rowspan : 1;
+                    let cs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].colspan : 1;
+                    if (i + rs - 1 > maxRow) rs = maxRow - i + 1; 
+                    
+                    let detail = values[i] && values[i][1] ? String(values[i][1]).trim() : "";
+                    rowHtml += `<td class="col-detail" rowspan="${rs}" colspan="${cs}">${detail}</td>`;
+                }
+                
+                for(let col = 3; col <= 26; col++) {
+                    if (!skipMap[`${i}-${col}`]) {
+                        let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
+                        let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
+                        if (col + cs - 1 > 26) cs = 26 - col + 1;
+                        if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
+                        
+                        let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
+                        let cellHex = backgrounds[i] && backgrounds[i][col] ? backgrounds[i][col].toLowerCase() : "";
+                        let barColor = rowColorClass;
+                        if (cellHex && cellHex !== "#ffffff" && cellHex !== "#000000" && hexToColorClass[cellHex]) {
+                            barColor = hexToColorClass[cellHex];
+                        }
+                        
+                        if (cellValue !== "") {
+                            rowHtml += `<td class="${barColor} task-bar" rowspan="${rs}" colspan="${cs}">${cellValue}</td>`;
+                        } else {
+                            rowHtml += `<td rowspan="${rs}" colspan="${cs}"></td>`;
+                        }
+                    }
+                }
+                rowHtml += "</tr>";
+                tbody.innerHTML += rowHtml;
+            }
+        }
+
+        // 🚨 2. 두 번째 시트(회의록) 렌더링 함수
+        function renderMeetingSchedule(sheetData) {
+            const values = sheetData.values;
+            const merges = sheetData.merges || [];
+            
+            const spanMap = {}; 
+            const skipMap = {}; 
+            merges.forEach(m => {
+                let r = m.row - 1; let c = m.col - 1;
+                let rs = m.numRows || 1; let cs = m.numCols || 1; 
+                spanMap[`${r}-${c}`] = { rowspan: rs, colspan: cs };
+                for(let ir = 0; ir < rs; ir++) {
+                    for(let ic = 0; ic < cs; ic++) {
+                        if(ir === 0 && ic === 0) continue; 
+                        skipMap[`${r+ir}-${c+ic}`] = true; 
+                    }
+                }
+            });
+
+            const headerRowIdx = 1; 
+            let startCol = 1; 
+            let endCol = values[headerRowIdx].length - 1;
+            while(endCol > startCol && (!values[headerRowIdx][endCol] || String(values[headerRowIdx][endCol]).trim() === "")) endCol--;
+
+            let maxRow = values.length - 1;
+            while (maxRow > headerRowIdx) {
+                let hasData = false;
+                for(let c = startCol; c <= endCol; c++) {
+                    if (values[maxRow][c] && String(values[maxRow][c]).trim() !== "") { hasData = true; break; }
+                }
+                if (hasData) break;
+                maxRow--;
+            }
+
+            // 테이블 전체를 감싸는 독자적인 스타일 컨테이너 렌더링
+            let html = '<div style="background: var(--surface-color); border-radius: 12px; border: 1px solid var(--border-light); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); overflow:hidden;">';
+            html += '<table id="meetingTable"><thead><tr>';
+            for(let c = startCol; c <= endCol; c++) {
+                html += `<th>${values[headerRowIdx][c] || ''}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            for(let i = headerRowIdx + 1; i <= maxRow; i++) {
+                html += '<tr>';
+                for(let col = startCol; col <= endCol; col++) {
+                    if(!skipMap[`${i}-${col}`]) {
+                        let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
+                        let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
+                        
+                        if (col + cs - 1 > endCol) cs = endCol - col + 1;
+                        if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
+                        
+                        let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
+                        cellValue = cellValue.replace(/\n/g, "<br>");
+                        
+                        // 날짜 영역(연,월,주차)과 회의 주제 영역 클래스 분리
+                        let alignClass = "";
+                        if (col <= 3) alignClass = "col-date";
+                        else if (col === 4) alignClass = "col-topic";
+                        
+                        html += `<td class="${alignClass}" rowspan="${rs}" colspan="${cs}">${cellValue}</td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table></div>';
+            
+            document.getElementById('scheduleView').innerHTML = html;
+        }
     </script>
 </body>
 </html>
