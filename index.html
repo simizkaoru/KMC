@@ -31,7 +31,6 @@
         
         .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        /* 🚨 가로 스크롤 활성화를 위해 최소 너비를 1800px로 확장 */
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
         
         th, td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
@@ -51,7 +50,6 @@
         .bg-network { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
         .bg-default { background: linear-gradient(135deg, #94a3b8, #64748b); }
         
-        /* 🚨 글자가 찌그러지지 않고 단어 단위로 예쁘게 줄바꿈되도록 속성 유지 */
         .task-bar { color: white; font-weight: 600; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 12.5px; letter-spacing: -0.3px; border: none !important; word-break: keep-all; line-height: 1.4; padding: 12px 8px !important; }
         .task-legend { color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; border-radius: 8px 0 0 8px; border: none !important; word-break: keep-all; }
 
@@ -65,7 +63,7 @@
             <h1>📅 KBL 미디어센터 구축 일정 대시보드</h1>
             <div class="zoom-controls">
                 <button class="btn-zoom" onclick="zoomTable(-0.1)">− 축소</button>
-                <span id="zoomLevel">100%</span>
+                <span id="zoomLevel">60%</span>
                 <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
             </div>
         </div>
@@ -90,10 +88,12 @@
         // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
         const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
 
-        let currentZoom = 1.0;
+        // 초기 비율을 60%로 고정
+        let currentZoom = 0.6; 
+        
         function zoomTable(step) {
             currentZoom += step;
-            if(currentZoom < 0.5) currentZoom = 0.5;
+            if(currentZoom < 0.3) currentZoom = 0.3; // 최소 30%까지 축소
             if(currentZoom > 2.0) currentZoom = 2.0;
             document.getElementById('scheduleTable').style.zoom = currentZoom;
             document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
@@ -105,13 +105,16 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('scheduleTable').style.display = 'table';
                 
+                // 데이터 렌더링 즉시 초기 60% 줌 적용
+                document.getElementById('scheduleTable').style.zoom = currentZoom;
+                document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
+                
                 const thead = document.getElementById('tableHead');
                 const tbody = document.getElementById('tableBody');
                 
                 const values = data.values;
                 const merges = data.merges || [];
                 
-                // 데이터의 실제 가장 아랫줄 번호
                 const maxRow = values.length - 1;
 
                 let headHtml = `
@@ -180,7 +183,6 @@
                     if (!skipMap[`${i}-1`]) {
                         let rs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].rowspan : 1;
                         let cs = spanMap[`${i}-1`] ? spanMap[`${i}-1`].colspan : 1;
-                        // 표 맨 아래를 뚫고 나가는 비정상 병합만 컷트
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1; 
                         
                         let detail = values[i] && values[i][1] ? String(values[i][1]).trim() : "";
