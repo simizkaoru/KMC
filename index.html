@@ -16,8 +16,36 @@
             --primary: #3b82f6;
         }
 
-        body { font-family: 'Pretendard', -apple-system, sans-serif; padding: 30px 20px; background-color: var(--bg-color); color: var(--text-main); margin: 0; }
+        body { font-family: 'Pretendard', -apple-system, sans-serif; padding: 0; background-color: var(--bg-color); color: var(--text-main); margin: 0; }
         
+        /* 🔒 로그인 화면 스타일 */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: var(--bg-color); display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background: var(--surface-color); padding: 40px; border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 320px;
+            border: 1px solid var(--border-light);
+        }
+        .login-box h2 { text-align: center; margin-top: 0; margin-bottom: 24px; font-size: 22px; letter-spacing: -0.5px; }
+        .login-input {
+            width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border-strong);
+            border-radius: 8px; font-family: 'Pretendard', sans-serif; font-size: 14px;
+            box-sizing: border-box; transition: border-color 0.2s;
+        }
+        .login-input:focus { outline: none; border-color: var(--primary); }
+        .login-btn {
+            width: 100%; padding: 14px; background: var(--primary); color: white; border: none;
+            border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .login-btn:hover { background: #2563eb; }
+        
+        /* 📊 메인 콘텐츠 래퍼 */
+        #mainContent { display: none; padding: 30px 20px; }
+
         .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
         
@@ -30,10 +58,16 @@
         .toggle-btn { border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
         .toggle-btn.active { background: var(--surface-color); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
+        /* ⚙️ 우측 상단 컨트롤 영역 (확대/축소 + 로그아웃) */
+        .header-right { display: flex; align-items: center; gap: 10px; }
         .zoom-controls { display: flex; align-items: center; gap: 8px; background: var(--surface-color); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-light); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .btn-zoom { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-weight: 600; color: var(--text-main); font-size: 14px; transition: all 0.2s; }
         .btn-zoom:hover { background: #e2e8f0; }
         #zoomLevel { font-size: 14px; font-weight: 700; color: var(--text-main); min-width: 45px; text-align: center; }
+        
+        /* 로그아웃 버튼 스타일 */
+        .btn-logout { background: #ef4444; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-logout:hover { background: #dc2626; }
 
         .legend-container { display: flex; gap: 12px; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-sub); background: var(--surface-color); padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
@@ -41,7 +75,7 @@
         
         .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        /* 1. 대시보드 테이블 전용 스타일 */
+        /* 대시보드 테이블 스타일 */
         table#scheduleTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
         table#scheduleTable th, table#scheduleTable td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
         table#scheduleTable thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
@@ -51,43 +85,23 @@
         .month-header { font-size: 12px; font-weight: 600; color: var(--text-sub); border-bottom: 1px solid var(--border-light); min-width: 50px; }
         .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light) !important; text-align: left !important; padding-left: 16px !important; }
         
-        /* 🚨 2. 회의록 테이블 전용 고급 스타일 */
+        /* 회의록 테이블 스타일 */
         table#meetingTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1300px; transform-origin: top left; }
-        table#meetingTable th { 
-            background-color: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; 
-            text-align: center; padding: 16px; border-bottom: 2px solid var(--border-strong); 
-            border-right: 1px solid var(--border-light); position: sticky; top: 0; z-index: 2; 
-        }
-        table#meetingTable td { 
-            padding: 16px 20px; font-size: 14px; line-height: 1.6; color: #475569;
-            border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); 
-            vertical-align: middle; text-align: left; background-color: var(--surface-color);
-            transition: background-color 0.2s;
-        }
-        
-        /* 회의록 날짜 컬럼(연,월,주차) 음영 처리 */
-        table#meetingTable td.col-date { 
-            background-color: #f8fafc; font-weight: 700; color: var(--text-main); text-align: center; 
-        }
-        /* 회의 주제 강조 */
-        table#meetingTable td.col-topic { 
-            font-weight: 700; color: #0f172a; font-size: 14.5px;
-        }
-        /* 마우스 오버 시 옅은 하이라이트 (날짜 제외 내용 셀만) */
-        table#meetingTable td:not(.col-date):hover { 
-            background-color: #f0f9ff; 
-        }
+        table#meetingTable th { background-color: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; text-align: center; padding: 16px; border-bottom: 2px solid var(--border-strong); border-right: 1px solid var(--border-light); position: sticky; top: 0; z-index: 2; }
+        table#meetingTable td { padding: 16px 20px; font-size: 14px; line-height: 1.6; color: #475569; border-bottom: 1px solid var(--border-light); border-right: 1px solid var(--border-light); vertical-align: middle; text-align: left; background-color: var(--surface-color); transition: background-color 0.2s; }
+        table#meetingTable td.col-date { background-color: #f8fafc; font-weight: 700; color: var(--text-main); text-align: center; }
+        table#meetingTable td.col-topic { font-weight: 700; color: #0f172a; font-size: 14.5px; }
+        table#meetingTable td:not(.col-date):hover { background-color: #f0f9ff; }
         table#meetingTable td:last-child, table#meetingTable th:last-child { border-right: none; }
         table#meetingTable tr:last-child td { border-bottom: none; }
         
-        /* 대시보드 컬러맵 */
+        /* 컬러맵 */
         .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
         .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
         .bg-cms { background: linear-gradient(135deg, #f472b6, #ec4899); }
         .bg-network { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
         .bg-default { background: linear-gradient(135deg, #94a3b8, #64748b); }
-        
         .bg-extra-1 { background: linear-gradient(135deg, #f87171, #ef4444); } 
         .bg-extra-2 { background: linear-gradient(135deg, #a3e635, #84cc16); } 
         .bg-extra-3 { background: linear-gradient(135deg, #2dd4bf, #14b8a6); } 
@@ -98,52 +112,124 @@
         
         .task-bar { color: white; font-weight: 600; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); font-size: 12.5px; letter-spacing: -0.3px; border: none !important; word-break: keep-all; line-height: 1.4; padding: 12px 8px !important; }
         .task-legend { color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; border-radius: 8px 0 0 8px; border: none !important; word-break: keep-all; }
-
         #loading { text-align: center; font-size: 15px; color: var(--text-main); padding: 80px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div class="header-section">
-        <div class="header-top">
-            <div class="title-area">
-                <h1>📅 KBL 미디어센터 구축 현황</h1>
-                <span id="debugStatus"></span>
-                <div class="toggle-wrapper">
-                    <button class="toggle-btn active" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
-                    <button class="toggle-btn" id="btnSchedule" onclick="switchTab('schedule')">주간 회의록</button>
+    <!-- 🔒 로그인 화면 -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>KBL 미디어센터 구축</h2>
+            <input type="text" id="loginId" class="login-input" placeholder="아이디" onkeypress="handleEnter(event)">
+            <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeypress="handleEnter(event)">
+            <button class="login-btn" onclick="verifyLogin()">로그인</button>
+        </div>
+    </div>
+
+    <!-- 📊 메인 콘텐츠 래퍼 -->
+    <div id="mainContent">
+        <div class="header-section">
+            <div class="header-top">
+                <div class="title-area">
+                    <h1>📅 KBL 미디어센터 구축 현황</h1>
+                    <span id="debugStatus"></span>
+                    <div class="toggle-wrapper">
+                        <button class="toggle-btn active" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
+                        <button class="toggle-btn" id="btnSchedule" onclick="switchTab('schedule')">주간 회의록</button>
+                    </div>
+                </div>
+                <!-- ⚙️ 우측 영역: 버튼 그룹 -->
+                <div class="header-right">
+                    <div class="zoom-controls">
+                        <button class="btn-zoom" onclick="zoomTable(-0.1)">− 축소</button>
+                        <span id="zoomLevel">60%</span>
+                        <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">로그아웃</button>
                 </div>
             </div>
-            <div class="zoom-controls">
-                <button class="btn-zoom" onclick="zoomTable(-0.1)">− 축소</button>
-                <span id="zoomLevel">60%</span>
-                <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
-            </div>
+            <div class="legend-container" id="dynamicLegend"></div>
         </div>
-        <div class="legend-container" id="dynamicLegend"></div>
-    </div>
 
-    <!-- 로딩 화면 -->
-    <div class="table-container" id="loadingContainer">
-        <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
-    </div>
+        <div class="table-container" id="loadingContainer">
+            <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
+        </div>
 
-    <!-- 뷰 1: 대시보드 -->
-    <div class="table-container" id="dashboardView" style="display:none;">
-        <table id="scheduleTable">
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+        <div class="table-container" id="dashboardView" style="display:none;">
+            <table id="scheduleTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
 
-    <!-- 뷰 2: 회의록 -->
-    <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
-        <!-- 여기에 table이 들어갑니다 (테이블 자체에 box-shadow 등을 주기 위해 컨테이너 스타일 리셋) -->
+        <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
+        </div>
     </div>
 
     <script>
-        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
+        // 🚨 구글 스크립트 웹 앱 URL (사용자 제공)
         const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
+
+        /* 🚨 개발자 도구 단축키 및 우클릭 차단 */
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
+        });
+
+        /* 💾 세션 체크 (새로고침 유지용) */
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('kblDashboardAuth') === 'true') {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                loadDashboardData();
+            }
+        });
+
+        /* 🔒 로그인 검증 (문자열 역순 난독화 적용) */
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // 엔터 키 입력 시 발생할 수 있는 폼 제출 이벤트 방지
+                verifyLogin();
+            }
+        }
+
+        function verifyLogin() {
+            // 양끝 공백 제거 (사용자 오입력 방지)
+            const u = document.getElementById('loginId').value.trim();
+            const p = document.getElementById('loginPw').value.trim();
+            
+            
+            const revU = u.split('').reverse().join('');
+            const revP = p.split('').reverse().join('');
+
+            
+            const adminId = 'nimda';        
+            const adminPw = '6202nimda';    
+            
+            
+            const kblId = 'lbk';            
+            const kblPw = '6202lbk';        
+
+            if ((revU === adminId && revP === adminPw) || (revU === kblId && revP === kblPw)) {
+                sessionStorage.setItem('kblDashboardAuth', 'true');
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                loadDashboardData(); 
+            } else {
+                alert('계정 정보가 일치하지 않습니다.');
+                document.getElementById('loginPw').value = '';
+                document.getElementById('loginPw').focus();
+            }
+        }
+
+        /* 🔓 로그아웃 로직 */
+        function logout() {
+            sessionStorage.removeItem('kblDashboardAuth');
+            location.reload(); 
+        }
 
         let currentZoom = 0.6; 
         
@@ -177,33 +263,34 @@
             }
         }
 
-        fetch(API_URL)
-            .then(response => response.json())
-            .then(data => {
-                const debugEl = document.getElementById('debugStatus');
-                if (!data.sheet1 || !data.sheet2) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요";
-                    debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 재배포해주세요.</b>";
-                    return;
-                }
-                
-                debugEl.innerText = `✅ 정상 연동 완료`;
-                debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
-                document.getElementById('loadingContainer').style.display = 'none';
-                
-                renderDashboard(data.sheet1);
-                renderMeetingSchedule(data.sheet2);
-                
-                zoomTable(0); 
-                switchTab('dashboard');
-            })
-            .catch(error => {
-                document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
-                console.error(error);
-            });
+        function loadDashboardData() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    const debugEl = document.getElementById('debugStatus');
+                    if (!data.sheet1 || !data.sheet2) {
+                        debugEl.innerText = "⚠️ 서버 업데이트 필요";
+                        debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
+                        document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 재배포해주세요.</b>";
+                        return;
+                    }
+                    
+                    debugEl.innerText = `✅ 정상 연동 완료`;
+                    debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
+                    document.getElementById('loadingContainer').style.display = 'none';
+                    
+                    renderDashboard(data.sheet1);
+                    renderMeetingSchedule(data.sheet2);
+                    
+                    zoomTable(0); 
+                    switchTab('dashboard');
+                })
+                .catch(error => {
+                    document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
+                    console.error(error);
+                });
+        }
 
-        // 1. 대시보드 렌더링
         function renderDashboard(sheetData) {
             const values = sheetData.values;
             const merges = sheetData.merges || [];
@@ -342,7 +429,6 @@
             }
         }
 
-        // 🚨 2. 두 번째 시트(회의록) 렌더링 함수
         function renderMeetingSchedule(sheetData) {
             const values = sheetData.values;
             const merges = sheetData.merges || [];
@@ -376,7 +462,6 @@
                 maxRow--;
             }
 
-            // 테이블 전체를 감싸는 독자적인 스타일 컨테이너 렌더링
             let html = '<div style="background: var(--surface-color); border-radius: 12px; border: 1px solid var(--border-light); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); overflow:hidden;">';
             html += '<table id="meetingTable"><thead><tr>';
             for(let c = startCol; c <= endCol; c++) {
@@ -397,7 +482,6 @@
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
                         cellValue = cellValue.replace(/\n/g, "<br>");
                         
-                        // 날짜 영역(연,월,주차)과 회의 주제 영역 클래스 분리
                         let alignClass = "";
                         if (col <= 3) alignClass = "col-date";
                         else if (col === 4) alignClass = "col-topic";
