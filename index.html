@@ -61,7 +61,6 @@
             vertical-align: middle; text-align: left; background-color: var(--surface-color);
             transition: background-color 0.2s;
         }
-        
         table#meetingTable td.col-date { background-color: #f8fafc; font-weight: 700; color: var(--text-main); text-align: center; }
         table#meetingTable td.col-topic { font-weight: 700; color: #0f172a; font-size: 14.5px; }
         table#meetingTable td:not(.col-date):hover { background-color: #f0f9ff; }
@@ -113,12 +112,10 @@
         <div class="legend-container" id="dynamicLegend"></div>
     </div>
 
-    <!-- 로딩 화면 -->
     <div class="table-container" id="loadingContainer">
         <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
     </div>
 
-    <!-- 뷰 1: 대시보드 (상세일정) -->
     <div class="table-container" id="dashboardView" style="display:none;">
         <table id="scheduleTable">
             <thead id="tableHead"></thead>
@@ -126,13 +123,12 @@
         </table>
     </div>
 
-    <!-- 뷰 2: 주간 회의록 (컨설팅 회의) -->
     <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
     </div>
 
     <script>
         // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요!
-        const API_URL = "https://script.google.com/macros/s/AKfycbwjo_LYAa0sNy3OhI7g1HkRFIMZ_KJdC4DzaCY4IjxDlvu2Z1qpaLLouycsO_iQ12uIUw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
 
         let currentZoom = 0.6; 
         
@@ -166,25 +162,23 @@
             }
         }
 
-        // 브라우저 캐시 방지 (항상 최신 시트 데이터 요청)
         const fetchUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
         fetch(fetchUrl, { cache: 'no-store' })
             .then(response => response.json())
             .then(data => {
                 const debugEl = document.getElementById('debugStatus');
-                // sheet1/sheet2 또는 dashboard/meeting 구조 모두 자동 호환
                 const sheet1Data = data.sheet1 || data.dashboard;
                 const sheet2Data = data.sheet2 || data.meeting;
 
                 if (!sheet1Data || !sheet2Data) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요";
+                    debugEl.innerText = "⚠️ 시트 이름 확인 또는 새 버전 배포 필요";
                     debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 확인하고 [새 버전]으로 재배포해주세요.</b>";
+                    document.getElementById('loading').innerHTML = "<b>오류: 구글 시트에 '상세일정'과 '컨설팅 회의' 시트가 있는지 확인하고 Apps Script를 [새 버전]으로 재배포해주세요.</b>";
                     return;
                 }
                 
-                debugEl.innerText = `✅ 정상 연동 완료`;
+                debugEl.innerText = `✅ 정상 연동 (${sheet1Data.name || '상세일정'} · ${sheet2Data.name || '컨설팅 회의'})`;
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
@@ -199,14 +193,20 @@
                 console.error(error);
             });
 
-        // 1. 대시보드 (상세일정) 렌더링 — 동적 헤더 & 열 범위 자동 인식
+        // 1. 대시보드 (상세일정) 렌더링
         function renderDashboard(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || []; 
             if (values.length < 5) return;
 
-            const maxRow = values.length - 1;
+            let maxRow = values.length - 1;
+            while (maxRow > 4) {
+                let hasData = values[maxRow].some(v => v && String(v).trim() !== "");
+                if (hasData) break;
+                maxRow--;
+            }
+
             const maxCol = Math.max(
                 (values[2] ? values[2].length : 0),
                 (values[3] ? values[3].length : 0)
@@ -268,7 +268,6 @@
                 }
             });
 
-            // 시트 3~4행(연/월)을 그대로 읽어 헤더 생성
             const thead = document.getElementById('tableHead');
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
