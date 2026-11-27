@@ -21,11 +21,11 @@
         .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
         
-        .title-area { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .title-area { display: flex; align-items: center; gap: 12px; }
         h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #debugStatus { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
         
-        .toggle-wrapper { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin-left: 6px; }
+        .toggle-wrapper { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin-left: 10px; }
         .toggle-btn { border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
         .toggle-btn.active { background: var(--surface-color); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
@@ -34,46 +34,21 @@
         .btn-zoom:hover { background: #e2e8f0; }
         #zoomLevel { font-size: 14px; font-weight: 700; color: var(--text-main); min-width: 45px; text-align: center; }
 
-        .legend-container { display: flex; gap: 12px; flex-wrap: wrap; min-height: 32px; }
+        .legend-container { display: flex; gap: 12px; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-sub); background: var(--surface-color); padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .color-box { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
+        .color-box { width: 12px; height: 12px; border-radius: 50%; }
         
         .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        /* 1. 타임테이블 전용 스타일 */
-        table#timetableTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1600px; transform-origin: top left; }
-        table#timetableTable td {
-            padding: 12px 10px;
-            text-align: center;
-            font-size: 13px;
-            border-bottom: 1px solid var(--border-light);
-            border-right: 1px solid #f1f5f9;
-            word-break: keep-all;
-            line-height: 1.4;
-        }
-        table#timetableTable td.tt-colored {
-            font-weight: 600;
-            border-radius: 6px;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
-        }
-        table#timetableTable td.tt-header {
-            font-weight: 700;
-            border-bottom: 1px solid var(--border-strong);
-        }
-        table#timetableTable td:last-child { border-right: none; }
-        table#timetableTable tr:last-child td { border-bottom: none; }
-
-        /* 2. 대시보드 테이블 스타일 */
-        table#dashboardTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
-        table#dashboardTable th, table#dashboardTable td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
-        table#dashboardTable thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
-        table#dashboardTable td:last-child, table#dashboardTable th:last-child { border-right: none; }
-        table#dashboardTable tr:last-child td { border-bottom: none; }
+        table#scheduleTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
+        table#scheduleTable th, table#scheduleTable td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
+        table#scheduleTable thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
+        table#scheduleTable td:last-child, table#scheduleTable th:last-child { border-right: none; }
+        table#scheduleTable tr:last-child td { border-bottom: none; }
         .year-header { font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--text-main) !important; padding-bottom: 10px; border-right: 1px solid var(--border-light) !important; }
         .month-header { font-size: 12px; font-weight: 600; color: var(--text-sub); border-bottom: 1px solid var(--border-light); min-width: 50px; }
         .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light) !important; text-align: left !important; padding-left: 16px !important; }
         
-        /* 3. 주간회의록 테이블 스타일 */
         table#meetingTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1300px; transform-origin: top left; }
         table#meetingTable th { 
             background-color: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; 
@@ -86,16 +61,17 @@
             vertical-align: middle; text-align: left; background-color: var(--surface-color);
             transition: background-color 0.2s;
         }
+        
         table#meetingTable td.col-date { background-color: #f8fafc; font-weight: 700; color: var(--text-main); text-align: center; }
         table#meetingTable td.col-topic { font-weight: 700; color: #0f172a; font-size: 14.5px; }
         table#meetingTable td:not(.col-date):hover { background-color: #f0f9ff; }
         table#meetingTable td:last-child, table#meetingTable th:last-child { border-right: none; }
         table#meetingTable tr:last-child td { border-bottom: none; }
         
+        /* 🚨 링크 디자인 (마우스 오버 시 효과) */
         .sheet-link { color: #2563eb; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; padding: 2px 4px; margin: -2px -4px; }
         .sheet-link:hover { color: #1d4ed8; background-color: #dbeafe; border-radius: 4px; }
 
-        /* 대시보드 카테고리 컬러맵 */
         .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
         .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
@@ -125,10 +101,8 @@
                 <h1>📅 KBL 미디어센터 구축 현황</h1>
                 <span id="debugStatus"></span>
                 <div class="toggle-wrapper">
-                    <!-- 타임테이블 비공개 처리 (다시 공개할 때 style="display:none;" 제거) -->
-                    <button class="toggle-btn" id="btnTimetable" onclick="switchTab('timetable')" style="display:none;">타임테이블</button>
                     <button class="toggle-btn active" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
-                    <button class="toggle-btn" id="btnMeeting" onclick="switchTab('meeting')">주간회의록</button>
+                    <button class="toggle-btn" id="btnSchedule" onclick="switchTab('schedule')">주간 회의록</button>
                 </div>
             </div>
             <div class="zoom-controls">
@@ -137,33 +111,29 @@
                 <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
             </div>
         </div>
-        <div class="legend-container" id="timetableLegend" style="display:none;"></div>
-        <div class="legend-container" id="dashboardLegend"></div>
+        <div class="legend-container" id="dynamicLegend"></div>
     </div>
 
+    <!-- 로딩 화면 -->
     <div class="table-container" id="loadingContainer">
         <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
     </div>
 
-    <div class="table-container" id="timetableView" style="display:none;">
-        <table id="timetableTable">
-            <tbody id="timetableBody"></tbody>
-        </table>
-    </div>
-
+    <!-- 뷰 1: 대시보드 -->
     <div class="table-container" id="dashboardView" style="display:none;">
-        <table id="dashboardTable">
-            <thead id="dashboardHead"></thead>
-            <tbody id="dashboardBody"></tbody>
+        <table id="scheduleTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
 
-    <div class="table-container" id="meetingView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
+    <!-- 뷰 2: 회의록 -->
+    <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
     </div>
 
     <script>
-        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요!
-        const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
+        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
+        const API_URL = "여기에_복사한_주소를_붙여넣으세요";
 
         let currentZoom = 0.6; 
         
@@ -172,52 +142,39 @@
             if(currentZoom < 0.3) currentZoom = 0.3;
             if(currentZoom > 2.0) currentZoom = 2.0;
             
-            ['timetableTable', 'dashboardTable', 'meetingTable'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.zoom = currentZoom;
-            });
+            const tb1 = document.getElementById('scheduleTable');
+            const tb2 = document.getElementById('meetingTable');
+            if(tb1) tb1.style.zoom = currentZoom;
+            if(tb2) tb2.style.zoom = currentZoom;
             
             document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
         }
 
         function switchTab(tabId) {
-            const tabs = {
-                timetable: { btn: 'btnTimetable', view: 'timetableView', legend: 'timetableLegend' },
-                dashboard: { btn: 'btnDashboard', view: 'dashboardView', legend: 'dashboardLegend' },
-                meeting:   { btn: 'btnMeeting',   view: 'meetingView',   legend: null }
-            };
-
-            Object.values(tabs).forEach(t => {
-                document.getElementById(t.btn).classList.remove('active');
-                document.getElementById(t.view).style.display = 'none';
-                if (t.legend) document.getElementById(t.legend).style.display = 'none';
-            });
-
-            const active = tabs[tabId];
-            document.getElementById(active.btn).classList.add('active');
-            document.getElementById(active.view).style.display = 'block';
-            if (active.legend) document.getElementById(active.legend).style.display = 'flex';
+            document.getElementById('btnDashboard').classList.remove('active');
+            document.getElementById('btnSchedule').classList.remove('active');
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('scheduleView').style.display = 'none';
+            
+            if(tabId === 'dashboard') {
+                document.getElementById('btnDashboard').classList.add('active');
+                document.getElementById('dashboardView').style.display = 'block';
+                document.getElementById('dynamicLegend').style.display = 'flex';
+            } else {
+                document.getElementById('btnSchedule').classList.add('active');
+                document.getElementById('scheduleView').style.display = 'block';
+                document.getElementById('dynamicLegend').style.display = 'none'; 
+            }
         }
 
-        function getContrastTextColor(hex) {
-            if (!hex || hex.length < 7) return '#1e293b';
-            const r = parseInt(hex.substr(1, 2), 16);
-            const g = parseInt(hex.substr(3, 2), 16);
-            const b = parseInt(hex.substr(5, 2), 16);
-            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-            return luminance > 0.65 ? '#1e293b' : '#ffffff';
-        }
-
-        const fetchUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-
-        fetch(fetchUrl)
+        fetch(API_URL)
             .then(response => response.json())
             .then(data => {
                 const debugEl = document.getElementById('debugStatus');
-                if (!data.timetable || !data.dashboard || !data.meeting) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (3개 시트 미지원)";
+                if (!data.sheet2 || !data.sheet2.links) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (링크 누락)";
                     debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 반드시 [새 버전]으로 재배포해주세요.</b>";
+                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 재배포해주세요.</b>";
                     return;
                 }
                 
@@ -225,165 +182,29 @@
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
-                // renderTimetable(data.timetable); // 비공개 처리 (다시 공개할 때 앞의 // 제거)
-                renderDashboard(data.dashboard);
-                renderMeetingSchedule(data.meeting);
+                renderDashboard(data.sheet1);
+                renderMeetingSchedule(data.sheet2);
                 
                 zoomTable(0); 
-                switchTab('dashboard'); // 기본 첫 화면: 대시보드
+                switchTab('dashboard');
             })
             .catch(error => {
                 document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
                 console.error(error);
             });
 
-        // 1. 타임테이블 전용 렌더링
-        function renderTimetable(sheetData) {
-            const values = sheetData.values || [];
-            const merges = sheetData.merges || [];
-            const backgrounds = sheetData.backgrounds || [];
-            if (values.length === 0) return;
-
-            const spanMap = {};
-            const skipMap = {};
-            merges.forEach(m => {
-                let r = m.row - 1; let c = m.col - 1;
-                let rs = m.numRows || 1; let cs = m.numCols || 1;
-                spanMap[`${r}-${c}`] = { rowspan: rs, colspan: cs };
-                for (let ir = 0; ir < rs; ir++) {
-                    for (let ic = 0; ic < cs; ic++) {
-                        if (ir === 0 && ic === 0) continue;
-                        skipMap[`${r + ir}-${c + ic}`] = true;
-                    }
-                }
-            });
-
-            let legendRowIdx = -1;
-            for (let r = values.length - 1; r >= 0; r--) {
-                let firstCell = values[r] && values[r][0] ? String(values[r][0]).trim() : "";
-                if (firstCell === "범례" || firstCell.includes("범례")) {
-                    legendRowIdx = r;
-                    break;
-                }
-            }
-
-            const legendContainer = document.getElementById('timetableLegend');
-            let legendHtml = "";
-            if (legendRowIdx !== -1) {
-                const rowVals = values[legendRowIdx] || [];
-                const rowBgs = backgrounds[legendRowIdx] || [];
-                for (let c = 1; c < rowVals.length; c++) {
-                    if (skipMap[`${legendRowIdx}-${c}`]) continue;
-                    let text = rowVals[c] ? String(rowVals[c]).trim() : "";
-                    if (text !== "") {
-                        let bg = rowBgs[c] ? rowBgs[c].toLowerCase() : "#cbd5e1";
-                        if (bg === "#ffffff") bg = "#cbd5e1";
-                        let displayText = text.replace(/\n/g, " ");
-                        legendHtml += `
-                            <div class="legend-item">
-                                <div class="color-box" style="background-color: ${bg};"></div>
-                                <span>${displayText}</span>
-                            </div>
-                        `;
-                    }
-                }
-            }
-            legendContainer.innerHTML = legendHtml;
-
-            let startRow = 0;
-            while (startRow < values.length) {
-                let hasData = values[startRow].some(v => v && String(v).trim() !== "");
-                if (hasData) break;
-                startRow++;
-            }
-
-            let maxRow = values.length - 1;
-            while (maxRow >= startRow) {
-                if (maxRow === legendRowIdx) { maxRow--; continue; }
-                let hasData = values[maxRow].some(v => v && String(v).trim() !== "");
-                if (hasData) break;
-                maxRow--;
-            }
-
-            let maxCol = 0;
-            for (let r = startRow; r <= maxRow; r++) {
-                if (r === legendRowIdx) continue;
-                for (let c = values[r].length - 1; c >= 0; c--) {
-                    let hasVal = values[r][c] && String(values[r][c]).trim() !== "";
-                    let hasBg = backgrounds[r] && backgrounds[r][c] && backgrounds[r][c].toLowerCase() !== "#ffffff";
-                    if (hasVal || hasBg) {
-                        if (c > maxCol) maxCol = c;
-                        break;
-                    }
-                }
-            }
-
-            const tbody = document.getElementById('timetableBody');
-            let bodyHtml = "";
-
-            for (let r = startRow; r <= maxRow; r++) {
-                if (r === legendRowIdx) continue;
-
-                bodyHtml += "<tr>";
-                for (let c = 0; c <= maxCol; c++) {
-                    if (skipMap[`${r}-${c}`]) continue;
-
-                    let rs = spanMap[`${r}-${c}`] ? spanMap[`${r}-${c}`].rowspan : 1;
-                    let cs = spanMap[`${r}-${c}`] ? spanMap[`${r}-${c}`].colspan : 1;
-
-                    if (c + cs - 1 > maxCol) cs = maxCol - c + 1;
-                    if (r + rs - 1 > maxRow) rs = maxRow - r + 1;
-                    if (legendRowIdx !== -1 && r < legendRowIdx && r + rs - 1 >= legendRowIdx) {
-                        rs = legendRowIdx - r;
-                    }
-
-                    let cellVal = values[r] && values[r][c] ? String(values[r][c]).trim() : "";
-                    cellVal = cellVal.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
-
-                    let bg = backgrounds[r] && backgrounds[r][c] ? backgrounds[r][c].toLowerCase() : "#ffffff";
-                    let isColored = bg && bg !== "#ffffff" && bg !== "";
-
-                    let styleAttr = "";
-                    let classList = [];
-
-                    if (isColored) {
-                        let textColor = getContrastTextColor(bg);
-                        styleAttr = `style="background-color: ${bg}; color: ${textColor};"`;
-                        classList.push("tt-colored");
-                    } else if (r <= startRow + 1) {
-                        classList.push("tt-header");
-                    }
-
-                    bodyHtml += `<td class="${classList.join(' ')}" ${styleAttr} rowspan="${rs}" colspan="${cs}">${cellVal}</td>`;
-                }
-                bodyHtml += "</tr>";
-            }
-
-            tbody.innerHTML = bodyHtml;
-        }
-
-        // 2. 대시보드 렌더링
+        // 1. 대시보드 렌더링
         function renderDashboard(sheetData) {
-            const values = sheetData.values || [];
+            const values = sheetData.values;
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || []; 
-            if (values.length < 5) return;
-
             const maxRow = values.length - 1;
-            const maxCol = Math.max(
-                (values[2] ? values[2].length : 0),
-                (values[3] ? values[3].length : 0)
-            ) - 1;
-
+            
             const categoryColorMap = {}; 
             const hexToColorClass = {}; 
             const predefinedClasses = {
-                "컨설팅": "bg-consulting",
-                "환경공사": "bg-env",
-                "베이스밴드": "bg-baseband",
-                "SI 공사": "bg-baseband",
-                "CMS": "bg-cms",
-                "회선망": "bg-network"
+                "컨설팅": "bg-consulting", "환경공사": "bg-env", "베이스밴드": "bg-baseband",
+                "CMS": "bg-cms", "회선망": "bg-network"
             };
             const extraColors = ["bg-extra-1", "bg-extra-2", "bg-extra-3", "bg-extra-4", "bg-extra-5", "bg-extra-6", "bg-extra-7"];
             let extraColorIdx = 0;
@@ -408,7 +229,7 @@
                 }
             }
 
-            const legendContainer = document.getElementById('dashboardLegend');
+            const legendContainer = document.getElementById('dynamicLegend');
             let legendHtml = "";
             for(let catName in categoryColorMap) {
                 let displayName = catName.replace(/\n/g, " "); 
@@ -416,6 +237,26 @@
                 legendHtml += `<div class="legend-item"><div class="color-box ${colorClass}"></div>${displayName}</div>`;
             }
             legendContainer.innerHTML = legendHtml;
+
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+            
+            let headHtml = `
+                <tr>
+                    <th rowspan="2" style="min-width: 100px;">구분</th>
+                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
+                    <th colspan="6" class="year-header">2026년</th>
+                    <th colspan="12" class="year-header">2027년</th>
+                    <th colspan="6" class="year-header" style="border-right: none;">2028년</th>
+                </tr>
+                <tr>
+            `;
+            const months = [7,8,9,10,11,12, 1,2,3,4,5,6,7,8,9,10,11,12, 1,2,3,4,5,6];
+            months.forEach((m, idx) => {
+                headHtml += `<th class="month-header" ${idx === 23 ? 'style="border-right:none;"' : ''}>${m}월</th>`;
+            });
+            headHtml += `</tr>`;
+            thead.innerHTML = headHtml;
 
             const spanMap = {}; 
             const skipMap = {}; 
@@ -431,38 +272,10 @@
                 }
             });
 
-            const thead = document.getElementById('dashboardHead');
-            const tbody = document.getElementById('dashboardBody');
-            tbody.innerHTML = "";
-            
-            let headHtml = `
-                <tr>
-                    <th rowspan="2" style="min-width: 110px;">구분</th>
-                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
-            `;
-            for (let col = 3; col <= maxCol; col++) {
-                if (!skipMap[`2-${col}`]) {
-                    let cs = spanMap[`2-${col}`] ? spanMap[`2-${col}`].colspan : 1;
-                    if (col + cs - 1 > maxCol) cs = maxCol - col + 1;
-                    let yearVal = values[2] && values[2][col] ? String(values[2][col]).trim() : "";
-                    let yearLabel = yearVal ? (yearVal.includes("년") ? yearVal : `${yearVal}년`) : "";
-                    let isLast = (col + cs - 1 >= maxCol);
-                    headHtml += `<th colspan="${cs}" class="year-header" ${isLast ? 'style="border-right: none;"' : ''}>${yearLabel}</th>`;
-                }
-            }
-            headHtml += `</tr><tr>`;
-            for (let col = 3; col <= maxCol; col++) {
-                let mVal = values[3] && values[3][col] ? String(values[3][col]).trim() : "";
-                let mLabel = mVal ? (mVal.includes("월") ? mVal : `${mVal}월`) : "";
-                headHtml += `<th class="month-header" ${col === maxCol ? 'style="border-right:none;"' : ''}>${mLabel}</th>`;
-            }
-            headHtml += `</tr>`;
-            thead.innerHTML = headHtml;
-
             let rowSpansA = {}; 
             let currentSpanIndex = -1;
             for(let i = 4; i <= maxRow; i++) {
-                let cat = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
+                let cat = String(values[i][0] || "").trim();
                 if(cat !== "") {
                     currentSpanIndex = i;
                     rowSpansA[i] = 1;
@@ -481,8 +294,7 @@
                 let rowColorClass = categoryColorMap[currentCategory] || "bg-default";
 
                 if (rowSpansA[i] > 0) {
-                    let displayA = currentCategory.replace(/\n/g, "<br>");
-                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${displayA}</td>`;
+                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
                 }
                 
                 if (!skipMap[`${i}-1`]) {
@@ -494,15 +306,14 @@
                     rowHtml += `<td class="col-detail" rowspan="${rs}" colspan="${cs}">${detail}</td>`;
                 }
                 
-                for(let col = 3; col <= maxCol; col++) {
+                for(let col = 3; col <= 26; col++) {
                     if (!skipMap[`${i}-${col}`]) {
                         let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
                         let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
-                        if (col + cs - 1 > maxCol) cs = maxCol - col + 1;
+                        if (col + cs - 1 > 26) cs = 26 - col + 1;
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                         
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
-                        cellValue = cellValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
                         let cellHex = backgrounds[i] && backgrounds[i][col] ? backgrounds[i][col].toLowerCase() : "";
                         let barColor = rowColorClass;
                         if (cellHex && cellHex !== "#ffffff" && cellHex !== "#000000" && hexToColorClass[cellHex]) {
@@ -521,11 +332,11 @@
             }
         }
 
-        // 3. 주간회의록 렌더링
+        // 🚨 2. 두 번째 시트(회의록) 렌더링 함수
         function renderMeetingSchedule(sheetData) {
-            const values = sheetData.values || [];
+            const values = sheetData.values;
             const merges = sheetData.merges || [];
-            const links = sheetData.links || [];
+            const links = sheetData.links || []; // 🔗 링크 데이터 받아오기
             
             const spanMap = {}; 
             const skipMap = {}; 
@@ -542,8 +353,6 @@
             });
 
             const headerRowIdx = 1; 
-            if (!values[headerRowIdx]) return;
-
             let startCol = 1; 
             let endCol = values[headerRowIdx].length - 1;
             while(endCol > startCol && (!values[headerRowIdx][endCol] || String(values[headerRowIdx][endCol]).trim() === "")) endCol--;
@@ -565,6 +374,7 @@
             }
             html += '</tr></thead><tbody>';
 
+            // URL 텍스트 자동 인식 정규식
             const urlRegex = /(https?:\/\/[^\s]+)/g;
 
             for(let i = headerRowIdx + 1; i <= maxRow; i++) {
@@ -578,13 +388,17 @@
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                         
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
-                        let cellLink = links[i] && links[i][col] ? links[i][col] : "";
+                        let cellLink = links[i] && links[i][col] ? links[i][col] : ""; // 해당 칸의 링크 주소
                         
+                        // XSS 방지 및 기본 줄바꿈 처리
                         cellValue = cellValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
                         
+                        // 🔗 하이퍼링크 처리
                         if (cellLink !== "") {
+                            // 엑셀에서 하이퍼링크가 걸린 칸
                             cellValue = `<a href="${cellLink}" target="_blank" class="sheet-link">${cellValue}</a>`;
                         } else {
+                            // 하이퍼링크 기능은 안 썼지만, 텍스트 안에 http:// 주소가 포함된 경우 (자동 링크)
                             cellValue = cellValue.replace(urlRegex, '<a href="$1" target="_blank" class="sheet-link">$1</a>');
                         }
                         
@@ -599,7 +413,7 @@
             }
             html += '</tbody></table></div>';
             
-            document.getElementById('meetingView').innerHTML = html;
+            document.getElementById('scheduleView').innerHTML = html;
         }
     </script>
 </body>
