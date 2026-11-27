@@ -125,8 +125,9 @@
                 <h1>📅 KBL 미디어센터 구축 현황</h1>
                 <span id="debugStatus"></span>
                 <div class="toggle-wrapper">
-                    <button class="toggle-btn active" id="btnTimetable" onclick="switchTab('timetable')" style="display:none;">타임테이블</button>
-                    <button class="toggle-btn" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
+                    <!-- 타임테이블 비공개 처리 (다시 공개할 때 style="display:none;" 제거) -->
+                    <button class="toggle-btn" id="btnTimetable" onclick="switchTab('timetable')" style="display:none;">타임테이블</button>
+                    <button class="toggle-btn active" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
                     <button class="toggle-btn" id="btnMeeting" onclick="switchTab('meeting')">주간회의록</button>
                 </div>
             </div>
@@ -136,8 +137,8 @@
                 <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
             </div>
         </div>
-        <div class="legend-container" id="timetableLegend"></div>
-        <div class="legend-container" id="dashboardLegend" style="display:none;"></div>
+        <div class="legend-container" id="timetableLegend" style="display:none;"></div>
+        <div class="legend-container" id="dashboardLegend"></div>
     </div>
 
     <div class="table-container" id="loadingContainer">
@@ -207,7 +208,6 @@
             return luminance > 0.65 ? '#1e293b' : '#ffffff';
         }
 
-        // 브라우저 캐시 방지용 타임스탬프 추가
         const fetchUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
         fetch(fetchUrl)
@@ -225,12 +225,12 @@
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
-                renderTimetable(data.timetable);
+                // renderTimetable(data.timetable); // 비공개 처리 (다시 공개할 때 앞의 // 제거)
                 renderDashboard(data.dashboard);
                 renderMeetingSchedule(data.meeting);
                 
                 zoomTable(0); 
-                switchTab('timetable');
+                switchTab('dashboard'); // 기본 첫 화면: 대시보드
             })
             .catch(error => {
                 document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
@@ -362,7 +362,7 @@
             tbody.innerHTML = bodyHtml;
         }
 
-        // 2. 대시보드 렌더링 (동적 헤더 & 열 개수 자동 인식)
+        // 2. 대시보드 렌더링
         function renderDashboard(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
@@ -431,7 +431,6 @@
                 }
             });
 
-            // 시트 3~4행(연/월)을 그대로 읽어 동적 헤더 생성
             const thead = document.getElementById('dashboardHead');
             const tbody = document.getElementById('dashboardBody');
             tbody.innerHTML = "";
