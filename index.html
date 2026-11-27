@@ -25,7 +25,6 @@
         h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #debugStatus { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
         
-        /* 탭 토글 스위치 */
         .toggle-wrapper { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin-left: 6px; }
         .toggle-btn { border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
         .toggle-btn.active { background: var(--surface-color); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -41,7 +40,7 @@
         
         .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        /* 1. 타임테이블 전용 스타일 (시트 원본 형식 & 컬러 반영) */
+        /* 1. 타임테이블 전용 스타일 */
         table#timetableTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1600px; transform-origin: top left; }
         table#timetableTable td {
             padding: 12px 10px;
@@ -93,7 +92,6 @@
         table#meetingTable td:last-child, table#meetingTable th:last-child { border-right: none; }
         table#meetingTable tr:last-child td { border-bottom: none; }
         
-        /* 하이퍼링크 스타일 */
         .sheet-link { color: #2563eb; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; padding: 2px 4px; margin: -2px -4px; }
         .sheet-link:hover { color: #1d4ed8; background-color: #dbeafe; border-radius: 4px; }
 
@@ -138,24 +136,20 @@
                 <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
             </div>
         </div>
-        <!-- 탭별 동적 범례 영역 -->
         <div class="legend-container" id="timetableLegend"></div>
         <div class="legend-container" id="dashboardLegend" style="display:none;"></div>
     </div>
 
-    <!-- 로딩 화면 -->
     <div class="table-container" id="loadingContainer">
         <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
     </div>
 
-    <!-- 뷰 1: 타임테이블 (첫 번째 시트) -->
     <div class="table-container" id="timetableView" style="display:none;">
         <table id="timetableTable">
             <tbody id="timetableBody"></tbody>
         </table>
     </div>
 
-    <!-- 뷰 2: 대시보드 (두 번째 시트) -->
     <div class="table-container" id="dashboardView" style="display:none;">
         <table id="dashboardTable">
             <thead id="dashboardHead"></thead>
@@ -163,7 +157,6 @@
         </table>
     </div>
 
-    <!-- 뷰 3: 주간회의록 (세 번째 시트) -->
     <div class="table-container" id="meetingView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
     </div>
 
@@ -205,7 +198,6 @@
             if (active.legend) document.getElementById(active.legend).style.display = 'flex';
         }
 
-        // 배경색 밝기에 따라 가독성 좋은 글자색 자동 선택
         function getContrastTextColor(hex) {
             if (!hex || hex.length < 7) return '#1e293b';
             const r = parseInt(hex.substr(1, 2), 16);
@@ -215,7 +207,10 @@
             return luminance > 0.65 ? '#1e293b' : '#ffffff';
         }
 
-        fetch(API_URL)
+        // 브라우저 캐시 방지용 타임스탬프 추가
+        const fetchUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+        fetch(fetchUrl)
             .then(response => response.json())
             .then(data => {
                 const debugEl = document.getElementById('debugStatus');
@@ -230,11 +225,8 @@
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
-                // 1. 타임테이블 (시트 원본 형식 & 컬러 그대로 + 하단 범례 상단 이동)
                 renderTimetable(data.timetable);
-                // 2. 대시보드 (기존 형식 유지)
                 renderDashboard(data.dashboard);
-                // 3. 주간회의록 (기존 형식 유지)
                 renderMeetingSchedule(data.meeting);
                 
                 zoomTable(0); 
@@ -245,17 +237,13 @@
                 console.error(error);
             });
 
-        // ==========================================
-        // 1. 타임테이블 전용 렌더링 (원본 형식 & 원본 컬러)
-        // ==========================================
+        // 1. 타임테이블 전용 렌더링
         function renderTimetable(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || [];
-
             if (values.length === 0) return;
 
-            // 병합 맵 생성
             const spanMap = {};
             const skipMap = {};
             merges.forEach(m => {
@@ -270,7 +258,6 @@
                 }
             });
 
-            // 1) '범례' 행 찾기
             let legendRowIdx = -1;
             for (let r = values.length - 1; r >= 0; r--) {
                 let firstCell = values[r] && values[r][0] ? String(values[r][0]).trim() : "";
@@ -280,7 +267,6 @@
                 }
             }
 
-            // 2) 하단 '범례' 행의 내용을 상단 범례 영역(#timetableLegend)으로 이동
             const legendContainer = document.getElementById('timetableLegend');
             let legendHtml = "";
             if (legendRowIdx !== -1) {
@@ -304,7 +290,6 @@
             }
             legendContainer.innerHTML = legendHtml;
 
-            // 3) 유효한 시작 행, 마지막 행, 마지막 열 계산
             let startRow = 0;
             while (startRow < values.length) {
                 let hasData = values[startRow].some(v => v && String(v).trim() !== "");
@@ -333,7 +318,6 @@
                 }
             }
 
-            // 4) 테이블 HTML 생성 (범례 행 제외)
             const tbody = document.getElementById('timetableBody');
             let bodyHtml = "";
 
@@ -378,20 +362,28 @@
             tbody.innerHTML = bodyHtml;
         }
 
-        // ==========================================
-        // 2. 대시보드 렌더링 (기존 로직 유지)
-        // ==========================================
+        // 2. 대시보드 렌더링 (동적 헤더 & 열 개수 자동 인식)
         function renderDashboard(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || []; 
+            if (values.length < 5) return;
+
             const maxRow = values.length - 1;
-            
+            const maxCol = Math.max(
+                (values[2] ? values[2].length : 0),
+                (values[3] ? values[3].length : 0)
+            ) - 1;
+
             const categoryColorMap = {}; 
             const hexToColorClass = {}; 
             const predefinedClasses = {
-                "컨설팅": "bg-consulting", "환경공사": "bg-env", "베이스밴드": "bg-baseband",
-                "CMS": "bg-cms", "회선망": "bg-network"
+                "컨설팅": "bg-consulting",
+                "환경공사": "bg-env",
+                "베이스밴드": "bg-baseband",
+                "SI 공사": "bg-baseband",
+                "CMS": "bg-cms",
+                "회선망": "bg-network"
             };
             const extraColors = ["bg-extra-1", "bg-extra-2", "bg-extra-3", "bg-extra-4", "bg-extra-5", "bg-extra-6", "bg-extra-7"];
             let extraColorIdx = 0;
@@ -425,27 +417,6 @@
             }
             legendContainer.innerHTML = legendHtml;
 
-            const thead = document.getElementById('dashboardHead');
-            const tbody = document.getElementById('dashboardBody');
-            tbody.innerHTML = "";
-            
-            let headHtml = `
-                <tr>
-                    <th rowspan="2" style="min-width: 100px;">구분</th>
-                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
-                    <th colspan="6" class="year-header">2026년</th>
-                    <th colspan="12" class="year-header">2027년</th>
-                    <th colspan="6" class="year-header" style="border-right: none;">2028년</th>
-                </tr>
-                <tr>
-            `;
-            const months = [7,8,9,10,11,12, 1,2,3,4,5,6,7,8,9,10,11,12, 1,2,3,4,5,6];
-            months.forEach((m, idx) => {
-                headHtml += `<th class="month-header" ${idx === 23 ? 'style="border-right:none;"' : ''}>${m}월</th>`;
-            });
-            headHtml += `</tr>`;
-            thead.innerHTML = headHtml;
-
             const spanMap = {}; 
             const skipMap = {}; 
             merges.forEach(m => {
@@ -459,6 +430,35 @@
                     }
                 }
             });
+
+            // 시트 3~4행(연/월)을 그대로 읽어 동적 헤더 생성
+            const thead = document.getElementById('dashboardHead');
+            const tbody = document.getElementById('dashboardBody');
+            tbody.innerHTML = "";
+            
+            let headHtml = `
+                <tr>
+                    <th rowspan="2" style="min-width: 110px;">구분</th>
+                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
+            `;
+            for (let col = 3; col <= maxCol; col++) {
+                if (!skipMap[`2-${col}`]) {
+                    let cs = spanMap[`2-${col}`] ? spanMap[`2-${col}`].colspan : 1;
+                    if (col + cs - 1 > maxCol) cs = maxCol - col + 1;
+                    let yearVal = values[2] && values[2][col] ? String(values[2][col]).trim() : "";
+                    let yearLabel = yearVal ? (yearVal.includes("년") ? yearVal : `${yearVal}년`) : "";
+                    let isLast = (col + cs - 1 >= maxCol);
+                    headHtml += `<th colspan="${cs}" class="year-header" ${isLast ? 'style="border-right: none;"' : ''}>${yearLabel}</th>`;
+                }
+            }
+            headHtml += `</tr><tr>`;
+            for (let col = 3; col <= maxCol; col++) {
+                let mVal = values[3] && values[3][col] ? String(values[3][col]).trim() : "";
+                let mLabel = mVal ? (mVal.includes("월") ? mVal : `${mVal}월`) : "";
+                headHtml += `<th class="month-header" ${col === maxCol ? 'style="border-right:none;"' : ''}>${mLabel}</th>`;
+            }
+            headHtml += `</tr>`;
+            thead.innerHTML = headHtml;
 
             let rowSpansA = {}; 
             let currentSpanIndex = -1;
@@ -482,7 +482,8 @@
                 let rowColorClass = categoryColorMap[currentCategory] || "bg-default";
 
                 if (rowSpansA[i] > 0) {
-                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
+                    let displayA = currentCategory.replace(/\n/g, "<br>");
+                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${displayA}</td>`;
                 }
                 
                 if (!skipMap[`${i}-1`]) {
@@ -494,14 +495,15 @@
                     rowHtml += `<td class="col-detail" rowspan="${rs}" colspan="${cs}">${detail}</td>`;
                 }
                 
-                for(let col = 3; col <= 26; col++) {
+                for(let col = 3; col <= maxCol; col++) {
                     if (!skipMap[`${i}-${col}`]) {
                         let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
                         let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
-                        if (col + cs - 1 > 26) cs = 26 - col + 1;
+                        if (col + cs - 1 > maxCol) cs = maxCol - col + 1;
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                         
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
+                        cellValue = cellValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
                         let cellHex = backgrounds[i] && backgrounds[i][col] ? backgrounds[i][col].toLowerCase() : "";
                         let barColor = rowColorClass;
                         if (cellHex && cellHex !== "#ffffff" && cellHex !== "#000000" && hexToColorClass[cellHex]) {
@@ -520,9 +522,7 @@
             }
         }
 
-        // ==========================================
-        // 3. 주간회의록 렌더링 (기존 로직 유지)
-        // ==========================================
+        // 3. 주간회의록 렌더링
         function renderMeetingSchedule(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
