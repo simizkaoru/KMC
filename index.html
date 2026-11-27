@@ -21,7 +21,7 @@
         .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
         
-        .title-area { display: flex; align-items: center; gap: 12px; }
+        .title-area { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #debugStatus { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
         
@@ -68,7 +68,6 @@
         table#meetingTable td:last-child, table#meetingTable th:last-child { border-right: none; }
         table#meetingTable tr:last-child td { border-bottom: none; }
         
-        /* 🚨 링크 디자인 (마우스 오버 시 효과) */
         .sheet-link { color: #2563eb; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; padding: 2px 4px; margin: -2px -4px; }
         .sheet-link:hover { color: #1d4ed8; background-color: #dbeafe; border-radius: 4px; }
 
@@ -119,7 +118,7 @@
         <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
     </div>
 
-    <!-- 뷰 1: 대시보드 -->
+    <!-- 뷰 1: 대시보드 (상세일정) -->
     <div class="table-container" id="dashboardView" style="display:none;">
         <table id="scheduleTable">
             <thead id="tableHead"></thead>
@@ -127,13 +126,13 @@
         </table>
     </div>
 
-    <!-- 뷰 2: 회의록 -->
+    <!-- 뷰 2: 주간 회의록 (컨설팅 회의) -->
     <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
     </div>
 
     <script>
-        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
-        const API_URL = "https://script.google.com/macros/s/AKfycbwjo_LYAa0sNy3OhI7g1HkRFIMZ_KJdC4DzaCY4IjxDlvu2Z1qpaLLouycsO_iQ12uIUw/exec";
+        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요!
+        const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
 
         let currentZoom = 0.6; 
         
@@ -167,14 +166,21 @@
             }
         }
 
-        fetch(API_URL)
+        // 브라우저 캐시 방지 (항상 최신 시트 데이터 요청)
+        const fetchUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+        fetch(fetchUrl, { cache: 'no-store' })
             .then(response => response.json())
             .then(data => {
                 const debugEl = document.getElementById('debugStatus');
-                if (!data.sheet2 || !data.sheet2.links) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (링크 누락)";
+                // sheet1/sheet2 또는 dashboard/meeting 구조 모두 자동 호환
+                const sheet1Data = data.sheet1 || data.dashboard;
+                const sheet2Data = data.sheet2 || data.meeting;
+
+                if (!sheet1Data || !sheet2Data) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요";
                     debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 재배포해주세요.</b>";
+                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 확인하고 [새 버전]으로 재배포해주세요.</b>";
                     return;
                 }
                 
@@ -182,8 +188,8 @@
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
-                renderDashboard(data.sheet1);
-                renderMeetingSchedule(data.sheet2);
+                renderDashboard(sheet1Data);
+                renderMeetingSchedule(sheet2Data);
                 
                 zoomTable(0); 
                 switchTab('dashboard');
@@ -193,18 +199,28 @@
                 console.error(error);
             });
 
-        // 1. 대시보드 렌더링
+        // 1. 대시보드 (상세일정) 렌더링 — 동적 헤더 & 열 범위 자동 인식
         function renderDashboard(sheetData) {
-            const values = sheetData.values;
+            const values = sheetData.values || [];
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || []; 
+            if (values.length < 5) return;
+
             const maxRow = values.length - 1;
+            const maxCol = Math.max(
+                (values[2] ? values[2].length : 0),
+                (values[3] ? values[3].length : 0)
+            ) - 1;
             
             const categoryColorMap = {}; 
             const hexToColorClass = {}; 
             const predefinedClasses = {
-                "컨설팅": "bg-consulting", "환경공사": "bg-env", "베이스밴드": "bg-baseband",
-                "CMS": "bg-cms", "회선망": "bg-network"
+                "컨설팅": "bg-consulting",
+                "환경공사": "bg-env",
+                "베이스밴드": "bg-baseband",
+                "SI 공사": "bg-baseband",
+                "CMS": "bg-cms",
+                "회선망": "bg-network"
             };
             const extraColors = ["bg-extra-1", "bg-extra-2", "bg-extra-3", "bg-extra-4", "bg-extra-5", "bg-extra-6", "bg-extra-7"];
             let extraColorIdx = 0;
@@ -238,26 +254,6 @@
             }
             legendContainer.innerHTML = legendHtml;
 
-            const thead = document.getElementById('tableHead');
-            const tbody = document.getElementById('tableBody');
-            
-            let headHtml = `
-                <tr>
-                    <th rowspan="2" style="min-width: 100px;">구분</th>
-                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
-                    <th colspan="6" class="year-header">2026년</th>
-                    <th colspan="12" class="year-header">2027년</th>
-                    <th colspan="6" class="year-header" style="border-right: none;">2028년</th>
-                </tr>
-                <tr>
-            `;
-            const months = [7,8,9,10,11,12, 1,2,3,4,5,6,7,8,9,10,11,12, 1,2,3,4,5,6];
-            months.forEach((m, idx) => {
-                headHtml += `<th class="month-header" ${idx === 23 ? 'style="border-right:none;"' : ''}>${m}월</th>`;
-            });
-            headHtml += `</tr>`;
-            thead.innerHTML = headHtml;
-
             const spanMap = {}; 
             const skipMap = {}; 
             merges.forEach(m => {
@@ -272,10 +268,39 @@
                 }
             });
 
+            // 시트 3~4행(연/월)을 그대로 읽어 헤더 생성
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            
+            let headHtml = `
+                <tr>
+                    <th rowspan="2" style="min-width: 110px;">구분</th>
+                    <th rowspan="2" style="min-width: 160px;">상세 내역</th>
+            `;
+            for (let col = 3; col <= maxCol; col++) {
+                if (!skipMap[`2-${col}`]) {
+                    let cs = spanMap[`2-${col}`] ? spanMap[`2-${col}`].colspan : 1;
+                    if (col + cs - 1 > maxCol) cs = maxCol - col + 1;
+                    let yearVal = values[2] && values[2][col] ? String(values[2][col]).trim() : "";
+                    let yearLabel = yearVal ? (yearVal.includes("년") ? yearVal : `${yearVal}년`) : "";
+                    let isLast = (col + cs - 1 >= maxCol);
+                    headHtml += `<th colspan="${cs}" class="year-header" ${isLast ? 'style="border-right: none;"' : ''}>${yearLabel}</th>`;
+                }
+            }
+            headHtml += `</tr><tr>`;
+            for (let col = 3; col <= maxCol; col++) {
+                let mVal = values[3] && values[3][col] ? String(values[3][col]).trim() : "";
+                let mLabel = mVal ? (mVal.includes("월") ? mVal : `${mVal}월`) : "";
+                headHtml += `<th class="month-header" ${col === maxCol ? 'style="border-right:none;"' : ''}>${mLabel}</th>`;
+            }
+            headHtml += `</tr>`;
+            thead.innerHTML = headHtml;
+
             let rowSpansA = {}; 
             let currentSpanIndex = -1;
             for(let i = 4; i <= maxRow; i++) {
-                let cat = String(values[i][0] || "").trim();
+                let cat = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
                 if(cat !== "") {
                     currentSpanIndex = i;
                     rowSpansA[i] = 1;
@@ -294,7 +319,8 @@
                 let rowColorClass = categoryColorMap[currentCategory] || "bg-default";
 
                 if (rowSpansA[i] > 0) {
-                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${currentCategory}</td>`;
+                    let displayA = currentCategory.replace(/\n/g, "<br>");
+                    rowHtml += `<td class="${rowColorClass} task-legend" rowspan="${rowSpansA[i]}">${displayA}</td>`;
                 }
                 
                 if (!skipMap[`${i}-1`]) {
@@ -306,14 +332,15 @@
                     rowHtml += `<td class="col-detail" rowspan="${rs}" colspan="${cs}">${detail}</td>`;
                 }
                 
-                for(let col = 3; col <= 26; col++) {
+                for(let col = 3; col <= maxCol; col++) {
                     if (!skipMap[`${i}-${col}`]) {
                         let rs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].rowspan : 1;
                         let cs = spanMap[`${i}-${col}`] ? spanMap[`${i}-${col}`].colspan : 1;
-                        if (col + cs - 1 > 26) cs = 26 - col + 1;
+                        if (col + cs - 1 > maxCol) cs = maxCol - col + 1;
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                         
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
+                        cellValue = cellValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
                         let cellHex = backgrounds[i] && backgrounds[i][col] ? backgrounds[i][col].toLowerCase() : "";
                         let barColor = rowColorClass;
                         if (cellHex && cellHex !== "#ffffff" && cellHex !== "#000000" && hexToColorClass[cellHex]) {
@@ -332,11 +359,11 @@
             }
         }
 
-        // 🚨 2. 두 번째 시트(회의록) 렌더링 함수
+        // 2. 주간 회의록 (컨설팅 회의) 렌더링
         function renderMeetingSchedule(sheetData) {
-            const values = sheetData.values;
+            const values = sheetData.values || [];
             const merges = sheetData.merges || [];
-            const links = sheetData.links || []; // 🔗 링크 데이터 받아오기
+            const links = sheetData.links || [];
             
             const spanMap = {}; 
             const skipMap = {}; 
@@ -353,6 +380,8 @@
             });
 
             const headerRowIdx = 1; 
+            if (!values[headerRowIdx]) return;
+
             let startCol = 1; 
             let endCol = values[headerRowIdx].length - 1;
             while(endCol > startCol && (!values[headerRowIdx][endCol] || String(values[headerRowIdx][endCol]).trim() === "")) endCol--;
@@ -374,7 +403,6 @@
             }
             html += '</tr></thead><tbody>';
 
-            // URL 텍스트 자동 인식 정규식
             const urlRegex = /(https?:\/\/[^\s]+)/g;
 
             for(let i = headerRowIdx + 1; i <= maxRow; i++) {
@@ -388,17 +416,13 @@
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                         
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
-                        let cellLink = links[i] && links[i][col] ? links[i][col] : ""; // 해당 칸의 링크 주소
+                        let cellLink = links[i] && links[i][col] ? links[i][col] : "";
                         
-                        // XSS 방지 및 기본 줄바꿈 처리
                         cellValue = cellValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
                         
-                        // 🔗 하이퍼링크 처리
                         if (cellLink !== "") {
-                            // 엑셀에서 하이퍼링크가 걸린 칸
                             cellValue = `<a href="${cellLink}" target="_blank" class="sheet-link">${cellValue}</a>`;
                         } else {
-                            // 하이퍼링크 기능은 안 썼지만, 텍스트 안에 http:// 주소가 포함된 경우 (자동 링크)
                             cellValue = cellValue.replace(urlRegex, '<a href="$1" target="_blank" class="sheet-link">$1</a>');
                         }
                         
