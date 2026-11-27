@@ -35,23 +35,46 @@
         .btn-zoom:hover { background: #e2e8f0; }
         #zoomLevel { font-size: 14px; font-weight: 700; color: var(--text-main); min-width: 45px; text-align: center; }
 
-        .legend-container { display: flex; gap: 12px; flex-wrap: wrap; }
+        .legend-container { display: flex; gap: 12px; flex-wrap: wrap; min-height: 32px; }
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-sub); background: var(--surface-color); padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .color-box { width: 12px; height: 12px; border-radius: 50%; }
+        .color-box { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
         
         .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        /* 타임테이블 & 대시보드 공통 테이블 스타일 */
-        table.timeline-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
-        table.timeline-table th, table.timeline-table td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
-        table.timeline-table thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
-        table.timeline-table td:last-child, table.timeline-table th:last-child { border-right: none; }
-        table.timeline-table tr:last-child td { border-bottom: none; }
+        /* 1. 타임테이블 전용 스타일 (시트 원본 형식 & 컬러 반영) */
+        table#timetableTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1600px; transform-origin: top left; }
+        table#timetableTable td {
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-light);
+            border-right: 1px solid #f1f5f9;
+            word-break: keep-all;
+            line-height: 1.4;
+        }
+        table#timetableTable td.tt-colored {
+            font-weight: 600;
+            border-radius: 6px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+        }
+        table#timetableTable td.tt-header {
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-strong);
+        }
+        table#timetableTable td:last-child { border-right: none; }
+        table#timetableTable tr:last-child td { border-bottom: none; }
+
+        /* 2. 대시보드 테이블 스타일 */
+        table#dashboardTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
+        table#dashboardTable th, table#dashboardTable td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
+        table#dashboardTable thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
+        table#dashboardTable td:last-child, table#dashboardTable th:last-child { border-right: none; }
+        table#dashboardTable tr:last-child td { border-bottom: none; }
         .year-header { font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--text-main) !important; padding-bottom: 10px; border-right: 1px solid var(--border-light) !important; }
         .month-header { font-size: 12px; font-weight: 600; color: var(--text-sub); border-bottom: 1px solid var(--border-light); min-width: 50px; }
         .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light) !important; text-align: left !important; padding-left: 16px !important; }
         
-        /* 주간회의록 테이블 스타일 */
+        /* 3. 주간회의록 테이블 스타일 */
         table#meetingTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1300px; transform-origin: top left; }
         table#meetingTable th { 
             background-color: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; 
@@ -74,7 +97,7 @@
         .sheet-link { color: #2563eb; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; padding: 2px 4px; margin: -2px -4px; }
         .sheet-link:hover { color: #1d4ed8; background-color: #dbeafe; border-radius: 4px; }
 
-        /* 카테고리 컬러맵 */
+        /* 대시보드 카테고리 컬러맵 */
         .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
         .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
@@ -103,7 +126,6 @@
             <div class="title-area">
                 <h1>📅 KBL 미디어센터 구축 현황</h1>
                 <span id="debugStatus"></span>
-                <!-- 탭 전환 버튼: 타임테이블 / 대시보드 / 주간회의록 -->
                 <div class="toggle-wrapper">
                     <button class="toggle-btn active" id="btnTimetable" onclick="switchTab('timetable')">타임테이블</button>
                     <button class="toggle-btn" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
@@ -128,21 +150,20 @@
 
     <!-- 뷰 1: 타임테이블 (첫 번째 시트) -->
     <div class="table-container" id="timetableView" style="display:none;">
-        <table id="timetableTable" class="timeline-table">
-            <thead id="timetableHead"></thead>
+        <table id="timetableTable">
             <tbody id="timetableBody"></tbody>
         </table>
     </div>
 
-    <!-- 뷰 2: 대시보드 (두 번째 시트 - 상세일정) -->
+    <!-- 뷰 2: 대시보드 (두 번째 시트) -->
     <div class="table-container" id="dashboardView" style="display:none;">
-        <table id="dashboardTable" class="timeline-table">
+        <table id="dashboardTable">
             <thead id="dashboardHead"></thead>
             <tbody id="dashboardBody"></tbody>
         </table>
     </div>
 
-    <!-- 뷰 3: 주간회의록 (세 번째 시트 - 컨설팅 회의) -->
+    <!-- 뷰 3: 주간회의록 (세 번째 시트) -->
     <div class="table-container" id="meetingView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
     </div>
 
@@ -184,6 +205,16 @@
             if (active.legend) document.getElementById(active.legend).style.display = 'flex';
         }
 
+        // 배경색 밝기에 따라 가독성 좋은 글자색 자동 선택
+        function getContrastTextColor(hex) {
+            if (!hex || hex.length < 7) return '#1e293b';
+            const r = parseInt(hex.substr(1, 2), 16);
+            const g = parseInt(hex.substr(3, 2), 16);
+            const b = parseInt(hex.substr(5, 2), 16);
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance > 0.65 ? '#1e293b' : '#ffffff';
+        }
+
         fetch(API_URL)
             .then(response => response.json())
             .then(data => {
@@ -199,23 +230,158 @@
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
-                // 1. 타임테이블 (첫 번째 시트)
-                renderTimelineSheet(data.timetable, 'timetableHead', 'timetableBody', 'timetableLegend');
-                // 2. 대시보드 (두 번째 시트 - 상세일정)
-                renderTimelineSheet(data.dashboard, 'dashboardHead', 'dashboardBody', 'dashboardLegend');
-                // 3. 주간회의록 (세 번째 시트 - 컨설팅 회의)
+                // 1. 타임테이블 (시트 원본 형식 & 컬러 그대로 + 하단 범례 상단 이동)
+                renderTimetable(data.timetable);
+                // 2. 대시보드 (기존 형식 유지)
+                renderDashboard(data.dashboard);
+                // 3. 주간회의록 (기존 형식 유지)
                 renderMeetingSchedule(data.meeting);
                 
                 zoomTable(0); 
-                switchTab('timetable'); // 기본 첫 화면: 타임테이블
+                switchTab('timetable');
             })
             .catch(error => {
                 document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
                 console.error(error);
             });
 
-        // 타임테이블 & 대시보드 공통 렌더링 함수
-        function renderTimelineSheet(sheetData, headId, bodyId, legendId) {
+        // ==========================================
+        // 1. 타임테이블 전용 렌더링 (원본 형식 & 원본 컬러)
+        // ==========================================
+        function renderTimetable(sheetData) {
+            const values = sheetData.values || [];
+            const merges = sheetData.merges || [];
+            const backgrounds = sheetData.backgrounds || [];
+
+            if (values.length === 0) return;
+
+            // 병합 맵 생성
+            const spanMap = {};
+            const skipMap = {};
+            merges.forEach(m => {
+                let r = m.row - 1; let c = m.col - 1;
+                let rs = m.numRows || 1; let cs = m.numCols || 1;
+                spanMap[`${r}-${c}`] = { rowspan: rs, colspan: cs };
+                for (let ir = 0; ir < rs; ir++) {
+                    for (let ic = 0; ic < cs; ic++) {
+                        if (ir === 0 && ic === 0) continue;
+                        skipMap[`${r + ir}-${c + ic}`] = true;
+                    }
+                }
+            });
+
+            // 1) '범례' 행 찾기
+            let legendRowIdx = -1;
+            for (let r = values.length - 1; r >= 0; r--) {
+                let firstCell = values[r] && values[r][0] ? String(values[r][0]).trim() : "";
+                if (firstCell === "범례" || firstCell.includes("범례")) {
+                    legendRowIdx = r;
+                    break;
+                }
+            }
+
+            // 2) 하단 '범례' 행의 내용을 상단 범례 영역(#timetableLegend)으로 이동
+            const legendContainer = document.getElementById('timetableLegend');
+            let legendHtml = "";
+            if (legendRowIdx !== -1) {
+                const rowVals = values[legendRowIdx] || [];
+                const rowBgs = backgrounds[legendRowIdx] || [];
+                for (let c = 1; c < rowVals.length; c++) {
+                    if (skipMap[`${legendRowIdx}-${c}`]) continue;
+                    let text = rowVals[c] ? String(rowVals[c]).trim() : "";
+                    if (text !== "") {
+                        let bg = rowBgs[c] ? rowBgs[c].toLowerCase() : "#cbd5e1";
+                        if (bg === "#ffffff") bg = "#cbd5e1";
+                        let displayText = text.replace(/\n/g, " ");
+                        legendHtml += `
+                            <div class="legend-item">
+                                <div class="color-box" style="background-color: ${bg};"></div>
+                                <span>${displayText}</span>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            legendContainer.innerHTML = legendHtml;
+
+            // 3) 유효한 시작 행, 마지막 행, 마지막 열 계산
+            let startRow = 0;
+            while (startRow < values.length) {
+                let hasData = values[startRow].some(v => v && String(v).trim() !== "");
+                if (hasData) break;
+                startRow++;
+            }
+
+            let maxRow = values.length - 1;
+            while (maxRow >= startRow) {
+                if (maxRow === legendRowIdx) { maxRow--; continue; }
+                let hasData = values[maxRow].some(v => v && String(v).trim() !== "");
+                if (hasData) break;
+                maxRow--;
+            }
+
+            let maxCol = 0;
+            for (let r = startRow; r <= maxRow; r++) {
+                if (r === legendRowIdx) continue;
+                for (let c = values[r].length - 1; c >= 0; c--) {
+                    let hasVal = values[r][c] && String(values[r][c]).trim() !== "";
+                    let hasBg = backgrounds[r] && backgrounds[r][c] && backgrounds[r][c].toLowerCase() !== "#ffffff";
+                    if (hasVal || hasBg) {
+                        if (c > maxCol) maxCol = c;
+                        break;
+                    }
+                }
+            }
+
+            // 4) 테이블 HTML 생성 (범례 행 제외)
+            const tbody = document.getElementById('timetableBody');
+            let bodyHtml = "";
+
+            for (let r = startRow; r <= maxRow; r++) {
+                if (r === legendRowIdx) continue;
+
+                bodyHtml += "<tr>";
+                for (let c = 0; c <= maxCol; c++) {
+                    if (skipMap[`${r}-${c}`]) continue;
+
+                    let rs = spanMap[`${r}-${c}`] ? spanMap[`${r}-${c}`].rowspan : 1;
+                    let cs = spanMap[`${r}-${c}`] ? spanMap[`${r}-${c}`].colspan : 1;
+
+                    if (c + cs - 1 > maxCol) cs = maxCol - c + 1;
+                    if (r + rs - 1 > maxRow) rs = maxRow - r + 1;
+                    if (legendRowIdx !== -1 && r < legendRowIdx && r + rs - 1 >= legendRowIdx) {
+                        rs = legendRowIdx - r;
+                    }
+
+                    let cellVal = values[r] && values[r][c] ? String(values[r][c]).trim() : "";
+                    cellVal = cellVal.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+
+                    let bg = backgrounds[r] && backgrounds[r][c] ? backgrounds[r][c].toLowerCase() : "#ffffff";
+                    let isColored = bg && bg !== "#ffffff" && bg !== "";
+
+                    let styleAttr = "";
+                    let classList = [];
+
+                    if (isColored) {
+                        let textColor = getContrastTextColor(bg);
+                        styleAttr = `style="background-color: ${bg}; color: ${textColor};"`;
+                        classList.push("tt-colored");
+                    } else if (r <= startRow + 1) {
+                        classList.push("tt-header");
+                    }
+
+                    bodyHtml += `<td class="${classList.join(' ')}" ${styleAttr} rowspan="${rs}" colspan="${cs}">${cellVal}</td>`;
+                }
+                bodyHtml += "</tr>";
+            }
+
+            tbody.innerHTML = bodyHtml;
+        }
+
+        // ==========================================
+        // 2. 대시보드 렌더링 (기존 로직 유지)
+        // ==========================================
+        function renderDashboard(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || []; 
@@ -250,7 +416,7 @@
                 }
             }
 
-            const legendContainer = document.getElementById(legendId);
+            const legendContainer = document.getElementById('dashboardLegend');
             let legendHtml = "";
             for(let catName in categoryColorMap) {
                 let displayName = catName.replace(/\n/g, " "); 
@@ -259,8 +425,8 @@
             }
             legendContainer.innerHTML = legendHtml;
 
-            const thead = document.getElementById(headId);
-            const tbody = document.getElementById(bodyId);
+            const thead = document.getElementById('dashboardHead');
+            const tbody = document.getElementById('dashboardBody');
             tbody.innerHTML = "";
             
             let headHtml = `
@@ -354,7 +520,9 @@
             }
         }
 
-        // 주간회의록 렌더링 함수
+        // ==========================================
+        // 3. 주간회의록 렌더링 (기존 로직 유지)
+        // ==========================================
         function renderMeetingSchedule(sheetData) {
             const values = sheetData.values || [];
             const merges = sheetData.merges || [];
