@@ -21,11 +21,12 @@
         .header-section { max-width: 1400px; margin: 0 auto 24px auto; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
         
-        .title-area { display: flex; align-items: center; gap: 12px; }
+        .title-area { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         h1 { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
         #debugStatus { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
         
-        .toggle-wrapper { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin-left: 10px; }
+        /* 탭 토글 스위치 */
+        .toggle-wrapper { display: inline-flex; background: #e2e8f0; padding: 4px; border-radius: 8px; margin-left: 6px; }
         .toggle-btn { border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
         .toggle-btn.active { background: var(--surface-color); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
@@ -40,15 +41,17 @@
         
         .table-container { max-width: 1400px; margin: 0 auto; overflow-x: auto; overflow-y: hidden; background: var(--surface-color); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
         
-        table#scheduleTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
-        table#scheduleTable th, table#scheduleTable td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
-        table#scheduleTable thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
-        table#scheduleTable td:last-child, table#scheduleTable th:last-child { border-right: none; }
-        table#scheduleTable tr:last-child td { border-bottom: none; }
+        /* 타임테이블 & 대시보드 공통 테이블 스타일 */
+        table.timeline-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1800px; transform-origin: top left; }
+        table.timeline-table th, table.timeline-table td { padding: 14px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid var(--border-light); border-right: 1px dashed #f1f5f9; }
+        table.timeline-table thead th { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 2; color: var(--text-main); }
+        table.timeline-table td:last-child, table.timeline-table th:last-child { border-right: none; }
+        table.timeline-table tr:last-child td { border-bottom: none; }
         .year-header { font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--text-main) !important; padding-bottom: 10px; border-right: 1px solid var(--border-light) !important; }
         .month-header { font-size: 12px; font-weight: 600; color: var(--text-sub); border-bottom: 1px solid var(--border-light); min-width: 50px; }
         .col-detail { background-color: #fdfdfd; color: var(--text-main); font-weight: 600; border-right: 2px solid var(--border-light) !important; text-align: left !important; padding-left: 16px !important; }
         
+        /* 주간회의록 테이블 스타일 */
         table#meetingTable { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1300px; transform-origin: top left; }
         table#meetingTable th { 
             background-color: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; 
@@ -61,17 +64,17 @@
             vertical-align: middle; text-align: left; background-color: var(--surface-color);
             transition: background-color 0.2s;
         }
-        
         table#meetingTable td.col-date { background-color: #f8fafc; font-weight: 700; color: var(--text-main); text-align: center; }
         table#meetingTable td.col-topic { font-weight: 700; color: #0f172a; font-size: 14.5px; }
         table#meetingTable td:not(.col-date):hover { background-color: #f0f9ff; }
         table#meetingTable td:last-child, table#meetingTable th:last-child { border-right: none; }
         table#meetingTable tr:last-child td { border-bottom: none; }
         
-        /* 🚨 링크 디자인 (마우스 오버 시 효과) */
+        /* 하이퍼링크 스타일 */
         .sheet-link { color: #2563eb; text-decoration: underline; text-underline-offset: 4px; font-weight: 600; padding: 2px 4px; margin: -2px -4px; }
         .sheet-link:hover { color: #1d4ed8; background-color: #dbeafe; border-radius: 4px; }
 
+        /* 카테고리 컬러맵 */
         .bg-consulting { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .bg-env { background: linear-gradient(135deg, #34d399, #10b981); }
         .bg-baseband { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
@@ -100,9 +103,11 @@
             <div class="title-area">
                 <h1>📅 KBL 미디어센터 구축 현황</h1>
                 <span id="debugStatus"></span>
+                <!-- 탭 전환 버튼: 타임테이블 / 대시보드 / 주간회의록 -->
                 <div class="toggle-wrapper">
-                    <button class="toggle-btn active" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
-                    <button class="toggle-btn" id="btnSchedule" onclick="switchTab('schedule')">주간 회의록</button>
+                    <button class="toggle-btn active" id="btnTimetable" onclick="switchTab('timetable')">타임테이블</button>
+                    <button class="toggle-btn" id="btnDashboard" onclick="switchTab('dashboard')">대시보드</button>
+                    <button class="toggle-btn" id="btnMeeting" onclick="switchTab('meeting')">주간회의록</button>
                 </div>
             </div>
             <div class="zoom-controls">
@@ -111,7 +116,9 @@
                 <button class="btn-zoom" onclick="zoomTable(0.1)">+ 확대</button>
             </div>
         </div>
-        <div class="legend-container" id="dynamicLegend"></div>
+        <!-- 탭별 동적 범례 영역 -->
+        <div class="legend-container" id="timetableLegend"></div>
+        <div class="legend-container" id="dashboardLegend" style="display:none;"></div>
     </div>
 
     <!-- 로딩 화면 -->
@@ -119,21 +126,29 @@
         <div id="loading">✨ 구글 시트와 실시간 동기화 중입니다...</div>
     </div>
 
-    <!-- 뷰 1: 대시보드 -->
-    <div class="table-container" id="dashboardView" style="display:none;">
-        <table id="scheduleTable">
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody"></tbody>
+    <!-- 뷰 1: 타임테이블 (첫 번째 시트) -->
+    <div class="table-container" id="timetableView" style="display:none;">
+        <table id="timetableTable" class="timeline-table">
+            <thead id="timetableHead"></thead>
+            <tbody id="timetableBody"></tbody>
         </table>
     </div>
 
-    <!-- 뷰 2: 회의록 -->
-    <div class="table-container" id="scheduleView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
+    <!-- 뷰 2: 대시보드 (두 번째 시트 - 상세일정) -->
+    <div class="table-container" id="dashboardView" style="display:none;">
+        <table id="dashboardTable" class="timeline-table">
+            <thead id="dashboardHead"></thead>
+            <tbody id="dashboardBody"></tbody>
+        </table>
+    </div>
+
+    <!-- 뷰 3: 주간회의록 (세 번째 시트 - 컨설팅 회의) -->
+    <div class="table-container" id="meetingView" style="display:none; background-color: var(--bg-color); border: none; box-shadow: none;">
     </div>
 
     <script>
-        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요! 
-        const API_URL = "https://script.google.com/macros/s/AKfycbxXiU9IipbxLVKBwpFBp8eaMxob8-zvcSm5bkyrTma0xjEtOaJYtZ2XUNZkPM5y2bLlDw/exec";
+        // 🚨 여기에 복사해둔 구글 스크립트 웹 앱 URL을 붙여넣으세요!
+        const API_URL = "여기에_복사한_주소를_붙여넣으세요";
 
         let currentZoom = 0.6; 
         
@@ -142,39 +157,41 @@
             if(currentZoom < 0.3) currentZoom = 0.3;
             if(currentZoom > 2.0) currentZoom = 2.0;
             
-            const tb1 = document.getElementById('scheduleTable');
-            const tb2 = document.getElementById('meetingTable');
-            if(tb1) tb1.style.zoom = currentZoom;
-            if(tb2) tb2.style.zoom = currentZoom;
+            ['timetableTable', 'dashboardTable', 'meetingTable'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.zoom = currentZoom;
+            });
             
             document.getElementById('zoomLevel').innerText = Math.round(currentZoom * 100) + '%';
         }
 
         function switchTab(tabId) {
-            document.getElementById('btnDashboard').classList.remove('active');
-            document.getElementById('btnSchedule').classList.remove('active');
-            document.getElementById('dashboardView').style.display = 'none';
-            document.getElementById('scheduleView').style.display = 'none';
-            
-            if(tabId === 'dashboard') {
-                document.getElementById('btnDashboard').classList.add('active');
-                document.getElementById('dashboardView').style.display = 'block';
-                document.getElementById('dynamicLegend').style.display = 'flex';
-            } else {
-                document.getElementById('btnSchedule').classList.add('active');
-                document.getElementById('scheduleView').style.display = 'block';
-                document.getElementById('dynamicLegend').style.display = 'none'; 
-            }
+            const tabs = {
+                timetable: { btn: 'btnTimetable', view: 'timetableView', legend: 'timetableLegend' },
+                dashboard: { btn: 'btnDashboard', view: 'dashboardView', legend: 'dashboardLegend' },
+                meeting:   { btn: 'btnMeeting',   view: 'meetingView',   legend: null }
+            };
+
+            Object.values(tabs).forEach(t => {
+                document.getElementById(t.btn).classList.remove('active');
+                document.getElementById(t.view).style.display = 'none';
+                if (t.legend) document.getElementById(t.legend).style.display = 'none';
+            });
+
+            const active = tabs[tabId];
+            document.getElementById(active.btn).classList.add('active');
+            document.getElementById(active.view).style.display = 'block';
+            if (active.legend) document.getElementById(active.legend).style.display = 'flex';
         }
 
         fetch(API_URL)
             .then(response => response.json())
             .then(data => {
                 const debugEl = document.getElementById('debugStatus');
-                if (!data.sheet2 || !data.sheet2.links) {
-                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (링크 누락)";
+                if (!data.timetable || !data.dashboard || !data.meeting) {
+                    debugEl.innerText = "⚠️ 서버 업데이트 필요 (3개 시트 미지원)";
                     debugEl.style.backgroundColor = "#fee2e2"; debugEl.style.color = "#ef4444";
-                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 재배포해주세요.</b>";
+                    document.getElementById('loading').innerHTML = "<b>오류: 구글 Apps Script 코드를 최신화하고 반드시 [새 버전]으로 재배포해주세요.</b>";
                     return;
                 }
                 
@@ -182,20 +199,24 @@
                 debugEl.style.backgroundColor = "#d1fae5"; debugEl.style.color = "#059669";
                 document.getElementById('loadingContainer').style.display = 'none';
                 
-                renderDashboard(data.sheet1);
-                renderMeetingSchedule(data.sheet2);
+                // 1. 타임테이블 (첫 번째 시트)
+                renderTimelineSheet(data.timetable, 'timetableHead', 'timetableBody', 'timetableLegend');
+                // 2. 대시보드 (두 번째 시트 - 상세일정)
+                renderTimelineSheet(data.dashboard, 'dashboardHead', 'dashboardBody', 'dashboardLegend');
+                // 3. 주간회의록 (세 번째 시트 - 컨설팅 회의)
+                renderMeetingSchedule(data.meeting);
                 
                 zoomTable(0); 
-                switchTab('dashboard');
+                switchTab('timetable'); // 기본 첫 화면: 타임테이블
             })
             .catch(error => {
                 document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다. URL 주소를 다시 확인해 주세요.";
                 console.error(error);
             });
 
-        // 1. 대시보드 렌더링
-        function renderDashboard(sheetData) {
-            const values = sheetData.values;
+        // 타임테이블 & 대시보드 공통 렌더링 함수
+        function renderTimelineSheet(sheetData, headId, bodyId, legendId) {
+            const values = sheetData.values || [];
             const merges = sheetData.merges || [];
             const backgrounds = sheetData.backgrounds || []; 
             const maxRow = values.length - 1;
@@ -229,7 +250,7 @@
                 }
             }
 
-            const legendContainer = document.getElementById('dynamicLegend');
+            const legendContainer = document.getElementById(legendId);
             let legendHtml = "";
             for(let catName in categoryColorMap) {
                 let displayName = catName.replace(/\n/g, " "); 
@@ -238,8 +259,9 @@
             }
             legendContainer.innerHTML = legendHtml;
 
-            const thead = document.getElementById('tableHead');
-            const tbody = document.getElementById('tableBody');
+            const thead = document.getElementById(headId);
+            const tbody = document.getElementById(bodyId);
+            tbody.innerHTML = "";
             
             let headHtml = `
                 <tr>
@@ -275,7 +297,7 @@
             let rowSpansA = {}; 
             let currentSpanIndex = -1;
             for(let i = 4; i <= maxRow; i++) {
-                let cat = String(values[i][0] || "").trim();
+                let cat = values[i] && values[i][0] ? String(values[i][0]).trim() : "";
                 if(cat !== "") {
                     currentSpanIndex = i;
                     rowSpansA[i] = 1;
@@ -332,11 +354,11 @@
             }
         }
 
-        // 🚨 2. 두 번째 시트(회의록) 렌더링 함수
+        // 주간회의록 렌더링 함수
         function renderMeetingSchedule(sheetData) {
-            const values = sheetData.values;
+            const values = sheetData.values || [];
             const merges = sheetData.merges || [];
-            const links = sheetData.links || []; // 🔗 링크 데이터 받아오기
+            const links = sheetData.links || [];
             
             const spanMap = {}; 
             const skipMap = {}; 
@@ -353,6 +375,8 @@
             });
 
             const headerRowIdx = 1; 
+            if (!values[headerRowIdx]) return;
+
             let startCol = 1; 
             let endCol = values[headerRowIdx].length - 1;
             while(endCol > startCol && (!values[headerRowIdx][endCol] || String(values[headerRowIdx][endCol]).trim() === "")) endCol--;
@@ -374,7 +398,6 @@
             }
             html += '</tr></thead><tbody>';
 
-            // URL 텍스트 자동 인식 정규식
             const urlRegex = /(https?:\/\/[^\s]+)/g;
 
             for(let i = headerRowIdx + 1; i <= maxRow; i++) {
@@ -388,17 +411,13 @@
                         if (i + rs - 1 > maxRow) rs = maxRow - i + 1;
                         
                         let cellValue = values[i] && values[i][col] ? String(values[i][col]).trim() : "";
-                        let cellLink = links[i] && links[i][col] ? links[i][col] : ""; // 해당 칸의 링크 주소
+                        let cellLink = links[i] && links[i][col] ? links[i][col] : "";
                         
-                        // XSS 방지 및 기본 줄바꿈 처리
                         cellValue = cellValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
                         
-                        // 🔗 하이퍼링크 처리
                         if (cellLink !== "") {
-                            // 엑셀에서 하이퍼링크가 걸린 칸
                             cellValue = `<a href="${cellLink}" target="_blank" class="sheet-link">${cellValue}</a>`;
                         } else {
-                            // 하이퍼링크 기능은 안 썼지만, 텍스트 안에 http:// 주소가 포함된 경우 (자동 링크)
                             cellValue = cellValue.replace(urlRegex, '<a href="$1" target="_blank" class="sheet-link">$1</a>');
                         }
                         
@@ -413,7 +432,7 @@
             }
             html += '</tbody></table></div>';
             
-            document.getElementById('scheduleView').innerHTML = html;
+            document.getElementById('meetingView').innerHTML = html;
         }
     </script>
 </body>
